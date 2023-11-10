@@ -42,8 +42,12 @@ fun LoginScreen() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "Care Connect", style = MaterialTheme.typography.headlineMedium)
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.weight(1f))
+        Text(
+            text = "Care Connect",
+            style = MaterialTheme.typography.headlineMedium
+        )
+        Spacer(modifier = Modifier.height(128.dp))
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
@@ -67,6 +71,9 @@ fun LoginScreen() {
         ) {
             Text(text = "Login")
         }
+        Spacer(modifier = Modifier.height(10.dp))
+        Text(text = "Don't have an account? Register here")
+        Spacer(modifier = Modifier.weight(1f)) // Flexible spacer to balance the content
     }
 }
 
