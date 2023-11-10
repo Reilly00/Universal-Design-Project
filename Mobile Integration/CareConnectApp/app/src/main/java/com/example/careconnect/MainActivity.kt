@@ -59,6 +59,14 @@ fun LoginScreen() {
             visualTransformation = PasswordVisualTransformation()
         )
         Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = { /* TODO: Add login logic here, not needed for current build */ },
+            shape = MaterialTheme.shapes.medium,
+            modifier = Modifier.fillMaxWidth(fraction = 0.5f),
+            contentPadding = PaddingValues(16.dp)
+        ) {
+            Text(text = "Login")
+        }
     }
 }
 
