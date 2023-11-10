@@ -1,2 +1,2 @@
 # Universal-Design-Project
-Our 3rd year collaborative universal design project. Developing a home security system for the elderly.
+Our 3rd year collaborative universal design project, "Care Connect". Care Connect is a user friendly digital platform providing a network of communication that helps caregivers and medical professionals who want to enhance dementia care and provide the highest quality care to people living with dementia by streamlining communication and data sharing unlike traditional fragmented methods.
