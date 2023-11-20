@@ -3,9 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="dashboard">
+    app:startDestination="@id/dashboard">
 
-    <composable name="dashboard" route="dashboard" />
+    <composable
+        android:id="@+id/dashboard"
+        android:name="com.example.careconnect.MainActivity" />
     <composable name="home" route="home" />
     <composable name="settings" route="settings" />
     <composable name="notifications" route="notifications" />

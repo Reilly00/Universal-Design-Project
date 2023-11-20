@@ -153,13 +153,6 @@ fun getDashboardItems(): List<DashboardItemModel> {
     )
 }
 
-@Preview(showBackground = true)
-@Composable
-fun DashboardPreview() {
-    CareConnectTheme {
-        Dashboard()
-    }
-}
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
