@@ -40,30 +40,40 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.remember
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.careconnect.ui.theme.CareConnectTheme
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             CareConnectTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Dashboard()
+                // Set up the navigation host
+                val navController = rememberNavController()
+                NavHost(navController = navController, startDestination = "dashboard") {
+                    composable("dashboard") { Dashboard(navController) }
+                    composable("home") { HomeScreen(navController) }
+                    composable("settings") { SettingsScreen(navController) }
+                    composable("notifications") { NotificationsScreen(navController) }
+                    composable("profile") { ProfileScreen(navController) }
 
                     // Bottom navigation bar
-                    BottomNavigationBar()
+                    BottomNavigationBar(navController)
                 }
             }
         }
     }
 }
 
+// Create a separate composable for each screen
 @Composable
-fun Dashboard() {
+fun Dashboard(navController: NavController) {
+    // Your dashboard content goes here
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -81,6 +91,26 @@ fun Dashboard() {
             DashboardItem(dashboardItem)
         }
     }
+}
+
+@Composable
+fun HomeScreen(navController: NavController) {
+    // Your home screen content goes here
+}
+
+@Composable
+fun SettingsScreen(navController: NavController) {
+    // Your settings screen content goes here
+}
+
+@Composable
+fun NotificationsScreen(navController: NavController) {
+    // Your notifications screen content goes here
+}
+
+@Composable
+fun ProfileScreen(navController: NavController) {
+    // Your profile screen content goes here
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -132,49 +162,39 @@ fun DashboardPreview() {
 }
 
 @Composable
-fun BottomNavigationBar() {
+fun BottomNavigationBar(navController: NavController) {
     val navItems = listOf(
-        BottomNavItem("Home", Icons.Default.Home),
-        BottomNavItem("Settings", Icons.Default.Settings),
-        BottomNavItem("Notifications", Icons.Default.Notifications),
-        BottomNavItem("Profile", Icons.Default.Person),
+        BottomNavItem("Home", Icons.Default.Home, "home"),
+        BottomNavItem("Settings", Icons.Default.Settings, "settings"),
+        BottomNavItem("Notifications", Icons.Default.Notifications, "notifications"),
+        BottomNavItem("Profile", Icons.Default.Person, "profile"),
     )
 
-    Box(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
-            .background(color = Color.White)
-            .align(Alignment.BottomCenter)
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.SpaceAround
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceAround
-        ) {
-            val navBackStackEntry by rememberUpdatedState(LocalContext.current)
-
-            navItems.forEach { navItem ->
-                IconButton(
-                    onClick = {
-                        // Handle navigation to the corresponding screen
-                    }
-                ) {
-                    Icon(
-                        imageVector = navItem.icon,
-                        contentDescription = null
-                    )
+        navItems.forEach { navItem ->
+            IconButton(
+                onClick = {
+                    navController.navigate(navItem.route)
                 }
+            ) {
+                Icon(
+                    imageVector = navItem.icon,
+                    contentDescription = null
+                )
             }
         }
     }
 }
 
-data class BottomNavItem(val label: String, val icon: ImageVector)
+data class BottomNavItem(val label: String, val icon: ImageVector, val route: String)
 
 @Preview(showBackground = true)
 @Composable
 fun BottomNavigationBarPreview() {
-    BottomNavigationBar()
+    // You can preview the BottomNavigationBar here
 }
