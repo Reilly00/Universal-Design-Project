@@ -123,6 +123,13 @@ fun getDashboardItems(): List<DashboardItemModel> {
     )
 }
 
+@Preview(showBackground = true)
+@Composable
+fun DashboardPreview() {
+    CareConnectTheme {
+        Dashboard()
+    }
+}
 
 @Composable
 fun BottomNavigationBar() {
@@ -138,11 +145,11 @@ fun BottomNavigationBar() {
             .fillMaxWidth()
             .padding(16.dp)
             .background(color = Color.White)
-            .align(Alignment.BottomCenter)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .align(Alignment.BottomCenter)
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
