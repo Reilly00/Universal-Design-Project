@@ -98,7 +98,14 @@ fun RegisterScreen(navController: NavController? = null) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
-    var passwordError by remember { mutableStateOf(false) } // State to track password error
+    var passwordError by remember { mutableStateOf(false) } // State to track password mismatch
+    var passwordRequirementError by remember { mutableStateOf("") } // State to track password requirements
+
+    // Function to check password requirements
+    fun isPasswordValid(password: String): Boolean {
+        val passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$"
+        return password.matches(passwordPattern.toRegex())
+    }
 
     Column(
         modifier = Modifier
@@ -126,7 +133,7 @@ fun RegisterScreen(navController: NavController? = null) {
             label = { Text("Password") },
             singleLine = true,
             visualTransformation = PasswordVisualTransformation(),
-            isError = passwordError  // Show error indicator if passwords do not match
+            isError = passwordError || passwordRequirementError.isNotEmpty()
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
@@ -135,15 +142,24 @@ fun RegisterScreen(navController: NavController? = null) {
             label = { Text("Confirm Password") },
             singleLine = true,
             visualTransformation = PasswordVisualTransformation(),
-            isError = passwordError  // Show error indicator if passwords do not match
+            isError = passwordError
         )
 
-        // Display error message if passwords do not match
         if (passwordError) {
             Text(
                 text = "Passwords do not match",
                 color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+        }
+
+        if (passwordRequirementError.isNotEmpty()) {
+            Text(
+                text = passwordRequirementError,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
             )
         }
 
@@ -151,8 +167,13 @@ fun RegisterScreen(navController: NavController? = null) {
         Button(
             onClick = {
                 passwordError = password != confirmPassword
-                if (!passwordError) {
-                    // TODO: Add registration logic here if passwords match
+                if (passwordError) {
+                    passwordRequirementError = ""
+                } else if (!isPasswordValid(password)) {
+                    passwordRequirementError = "Password must:\n Be at least 8 characters, \n include an uppercase letter, \n a lowercase letter, symbol, and a number."
+                } else {
+                    passwordRequirementError = ""
+                    // TODO: Add registration logic here if passwords match and meet requirements
                 }
             },
             shape = MaterialTheme.shapes.medium,
