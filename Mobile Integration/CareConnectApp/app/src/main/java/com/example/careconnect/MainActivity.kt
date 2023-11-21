@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
                     // Navigation Host
                     NavHost(navController = navController, startDestination = "login") {
                         composable("login") { LoginScreen(navController) }
-                        composable("register") { RegisterScreen() }
+                        composable("register") { RegisterScreen(navController) }
                     }
                 }
             }
@@ -94,7 +94,7 @@ fun LoginScreen(navController: NavController? = null) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen() {
+fun RegisterScreen(navController: NavController? = null) {
     // State for the input fields
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -103,39 +103,52 @@ fun RegisterScreen() {
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Email input field
+        Spacer(modifier = Modifier.weight(1f))
+        Text(
+            text = "Care Connect",
+            style = MaterialTheme.typography.headlineMedium
+        )
+        Spacer(modifier = Modifier.height(128.dp))
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
             label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth()
+            singleLine = true
         )
-
         Spacer(modifier = Modifier.height(16.dp))
-
-        // Password input field
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
             label = { Text("Password") },
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth()
+            singleLine = true,
+            visualTransformation = PasswordVisualTransformation()
         )
-
         Spacer(modifier = Modifier.height(16.dp))
-
-        // Register button
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Confirm Password") },
+            singleLine = true,
+            visualTransformation = PasswordVisualTransformation()
+        )
+        Spacer(modifier = Modifier.height(16.dp))
         Button(
-            onClick = {
-                // Handle the register logic here
-            },
-            modifier = Modifier.fillMaxWidth()
+            onClick = { /* TODO: Add login logic here, not needed for current build */ },
+            shape = MaterialTheme.shapes.medium,
+            modifier = Modifier.fillMaxWidth(fraction = 0.5f),
+            contentPadding = PaddingValues(16.dp)
         ) {
-            Text("Register")
+            Text(text = "Register")
         }
+        Spacer(modifier = Modifier.height(10.dp))
+        Text(
+            text = "Already have an account? Log-in",
+            modifier = Modifier.clickable { navController?.navigate("login") }
+        )
+        Spacer(modifier = Modifier.weight(1f))
     }
 }
 
