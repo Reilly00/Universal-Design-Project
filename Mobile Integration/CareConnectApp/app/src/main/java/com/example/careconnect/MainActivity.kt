@@ -38,6 +38,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.careconnect.ui.theme.CareConnectTheme
@@ -47,18 +53,19 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             CareConnectTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     Dashboard()
+                    LoginScreen()
                 }
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Dashboard() {
     Column(
@@ -120,6 +127,51 @@ fun getDashboardItems(): List<DashboardItemModel> {
         DashboardItemModel("View Records"),
         DashboardItemModel("Update Records"),
     )
+    
+fun LoginScreen() {
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.weight(1f))
+        Text(
+            text = "Care Connect",
+            style = MaterialTheme.typography.headlineMedium
+        )
+        Spacer(modifier = Modifier.height(128.dp))
+        OutlinedTextField(
+            value = username,
+            onValueChange = { username = it },
+            label = { Text("Username") },
+            singleLine = true
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Password") },
+            singleLine = true,
+            visualTransformation = PasswordVisualTransformation()
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = { /* TODO: Add login logic here, not needed for current build */ },
+            shape = MaterialTheme.shapes.medium,
+            modifier = Modifier.fillMaxWidth(fraction = 0.5f),
+            contentPadding = PaddingValues(16.dp)
+        ) {
+            Text(text = "Login")
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        Text(text = "Don't have an account? Register here")
+        Spacer(modifier = Modifier.weight(1f)) // Flexible spacer to balance the content
+    }
 }
 
 @Preview(showBackground = true)
@@ -179,4 +231,9 @@ data class BottomNavItem(val label: String, val icon: ImageVector)
 @Composable
 fun BottomNavigationBarPreview() {
     BottomNavigationBar()
+}
+fun DefaultPreview() {
+    CareConnectTheme {
+        LoginScreen()
+    }
 }
