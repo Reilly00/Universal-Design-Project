@@ -1,3 +1,5 @@
+## This is a Version of the Readin Card and Tag devices where will be reading and publishing the data to PubNub.
+
 import RPi.GPIO as GPIO
 import uuid
 from mfrc522 import SimpleMFRC522
