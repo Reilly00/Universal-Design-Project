@@ -53,9 +53,6 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     Dashboard()
-
-                    // Bottom navigation bar
-                    BottomNavigationBar()
                 }
             }
         }
@@ -64,22 +61,25 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Dashboard() {
-    LazyColumn(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        item {
-            Text(
-                text = "Dashboard",
-                style = TextStyle.Default,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
+        Text(
+            text = "Dashboard",
+            style = TextStyle.Default,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        LazyColumn {
+            items(getDashboardItems()) { dashboardItem ->
+                DashboardItem(dashboardItem)
+            }
         }
 
-        items(getDashboardItems()) { dashboardItem ->
-            DashboardItem(dashboardItem)
-        }
+        // Bottom navigation bar at the end of the Column
+        BottomNavigationBar()
     }
 }
 
@@ -143,6 +143,7 @@ fun BottomNavigationBar() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .fillMaxHeight()
             .padding(16.dp)
             .background(color = Color.White)
     ) {
@@ -163,7 +164,8 @@ fun BottomNavigationBar() {
                 ) {
                     Icon(
                         imageVector = navItem.icon,
-                        contentDescription = null
+                        contentDescription = null,
+                        modifier = Modifier.size(32.dp)
                     )
                 }
             }
