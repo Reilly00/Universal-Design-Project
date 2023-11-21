@@ -8,8 +8,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.*
 import androidx.compose.material.icons.filled.Home
@@ -26,27 +24,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -77,10 +63,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(navController: NavController? = null) {
-  
 fun Dashboard() {
     Column(
         modifier = Modifier
@@ -142,8 +125,9 @@ fun getDashboardItems(): List<DashboardItemModel> {
         DashboardItemModel("Update Records"),
     )
 }
-    
-fun LoginScreen() {
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LoginScreen(navController: NavController? = null)  {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -359,14 +343,6 @@ fun PasswordStrengthMeter(strength: PasswordStrength) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun DashboardPreview() {
-    CareConnectTheme {
-        Dashboard()
-    }
-}
-
 @Composable
 fun BottomNavigationBar() {
     val navItems = listOf(
@@ -411,15 +387,3 @@ fun BottomNavigationBar() {
 }
 
 data class BottomNavItem(val label: String, val icon: ImageVector)
-
-@Preview(showBackground = true)
-@Composable
-fun BottomNavigationBarPreview() {
-    BottomNavigationBar()
-}
-fun DefaultPreview() {
-    CareConnectTheme {
-        // Static preview of the LoginScreen without navigation functionality
-        LoginScreen()
-    }
-}
