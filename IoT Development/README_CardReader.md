@@ -28,6 +28,7 @@ coordination by centralizing critical patient information.
 
 ![Php, Html, Sql](https://raw.githubusercontent.com/Reilly00/Universal-Design-Project/main/IoT%20Development/CardReaderDiagram.jpg)
 
+
 ### Overview
 The card reader diagram illustrates the flow of data and interactions within the system 
 related to card reading functionality. This functionality is a crucial component of our
