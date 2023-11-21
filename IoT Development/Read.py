@@ -1,4 +1,4 @@
-
+#this is a basic starting point for the reader device.
 #!/usr/bin/env python
 
 import RPi.GPIO as GPIO
