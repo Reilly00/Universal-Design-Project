@@ -63,7 +63,7 @@ fun LoginScreen(navController: NavController? = null) {
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text("Username") },
+            label = { Text("Email") },
             singleLine = true
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -95,9 +95,10 @@ fun LoginScreen(navController: NavController? = null) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(navController: NavController? = null) {
-    // State for the input fields
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
+    var passwordError by remember { mutableStateOf(false) } // State to track password error
 
     Column(
         modifier = Modifier
@@ -124,19 +125,36 @@ fun RegisterScreen(navController: NavController? = null) {
             onValueChange = { password = it },
             label = { Text("Password") },
             singleLine = true,
-            visualTransformation = PasswordVisualTransformation()
+            visualTransformation = PasswordVisualTransformation(),
+            isError = passwordError  // Show error indicator if passwords do not match
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
+            value = confirmPassword,
+            onValueChange = { confirmPassword = it },
             label = { Text("Confirm Password") },
             singleLine = true,
-            visualTransformation = PasswordVisualTransformation()
+            visualTransformation = PasswordVisualTransformation(),
+            isError = passwordError  // Show error indicator if passwords do not match
         )
+
+        // Display error message if passwords do not match
+        if (passwordError) {
+            Text(
+                text = "Passwords do not match",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
         Button(
-            onClick = { /* TODO: Add login logic here, not needed for current build */ },
+            onClick = {
+                passwordError = password != confirmPassword
+                if (!passwordError) {
+                    // TODO: Add registration logic here if passwords match
+                }
+            },
             shape = MaterialTheme.shapes.medium,
             modifier = Modifier.fillMaxWidth(fraction = 0.5f),
             contentPadding = PaddingValues(16.dp)
@@ -151,7 +169,6 @@ fun RegisterScreen(navController: NavController? = null) {
         Spacer(modifier = Modifier.weight(1f))
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
