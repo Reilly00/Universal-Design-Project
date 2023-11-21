@@ -100,8 +100,9 @@ fun DashboardItem(item: DashboardItemModel) {
         ) {
             Text(
                 text = item.title,
-                style = TextStyle.Default,
-                modifier = Modifier.padding(bottom = 8.dp)
+                color = MaterialTheme.colorScheme.secondary,
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(bottom = 8.dp),
             )
 
             Text(
@@ -117,9 +118,12 @@ data class DashboardItemModel(val title: String, val subtitle: String)
 
 fun getDashboardItems(): List<DashboardItemModel> {
     return listOf(
-        DashboardItemModel("Item 1", "Subtitle for Item 1"),
-        DashboardItemModel("Item 2", "Subtitle for Item 2"),
-        DashboardItemModel("Item 3", "Subtitle for Item 3"),
+        DashboardItemModel("Patients", "Currently assigned Patients"),
+        DashboardItemModel("Carer's Portal", "Carer Communication Portal"),
+        DashboardItemModel("Scan Details", "Scan Patient Details"),
+        DashboardItemModel("Email", "Email"),
+        DashboardItemModel("View Records", "View Patient Records"),
+        DashboardItemModel("Update Records", "Update Patient Records"),
     )
 }
 
@@ -150,6 +154,7 @@ fun BottomNavigationBar() {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                //.background(color = Color.Blue)
                 .align(Alignment.BottomCenter)
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceAround
