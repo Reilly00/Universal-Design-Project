@@ -62,14 +62,14 @@ fun LoginScreen(navController: NavController? = null) {
         Spacer(modifier = Modifier.height(128.dp))
         OutlinedTextField(
             value = username,
-            onValueChange = { username = it },
+            onValueChange = { username = it.trim() },
             label = { Text("Email") },
             singleLine = true
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
             value = password,
-            onValueChange = { password = it },
+            onValueChange = { password = it.trim() },
             label = { Text("Password") },
             singleLine = true,
             visualTransformation = PasswordVisualTransformation()
@@ -129,7 +129,7 @@ fun RegisterScreen(navController: NavController? = null) {
 
         OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
+            onValueChange = { email = it.trim() },
             label = { Text("Email") },
             singleLine = true,
             isError = emailError.isNotEmpty()
@@ -148,7 +148,7 @@ fun RegisterScreen(navController: NavController? = null) {
 
         OutlinedTextField(
             value = password,
-            onValueChange = { password = it },
+            onValueChange = { password = it.trim() },
             label = { Text("Password") },
             singleLine = true,
             visualTransformation = PasswordVisualTransformation(),
@@ -159,7 +159,7 @@ fun RegisterScreen(navController: NavController? = null) {
 
         OutlinedTextField(
             value = confirmPassword,
-            onValueChange = { confirmPassword = it },
+            onValueChange = { confirmPassword = it.trim() },
             label = { Text("Confirm Password") },
             singleLine = true,
             visualTransformation = PasswordVisualTransformation(),
