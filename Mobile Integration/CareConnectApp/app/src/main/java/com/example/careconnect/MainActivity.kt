@@ -98,8 +98,14 @@ fun RegisterScreen(navController: NavController? = null) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+    var emailError by remember { mutableStateOf("") } // State to track email error
     var passwordError by remember { mutableStateOf(false) } // State to track password mismatch
     var passwordRequirementError by remember { mutableStateOf("") } // State to track password requirements
+
+    // Function to check email format
+    fun isEmailValid(email: String): Boolean {
+        return email.contains("@") && email.substringAfter("@").contains(".")
+    }
 
     // Function to check password requirements
     fun isPasswordValid(password: String): Boolean {
@@ -120,13 +126,26 @@ fun RegisterScreen(navController: NavController? = null) {
             style = MaterialTheme.typography.headlineMedium
         )
         Spacer(modifier = Modifier.height(128.dp))
+
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
             label = { Text("Email") },
-            singleLine = true
+            singleLine = true,
+            isError = emailError.isNotEmpty()
         )
+
+        if (emailError.isNotEmpty()) {
+            Text(
+                text = emailError,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
+
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
@@ -135,7 +154,9 @@ fun RegisterScreen(navController: NavController? = null) {
             visualTransformation = PasswordVisualTransformation(),
             isError = passwordError || passwordRequirementError.isNotEmpty()
         )
+
         Spacer(modifier = Modifier.height(16.dp))
+
         OutlinedTextField(
             value = confirmPassword,
             onValueChange = { confirmPassword = it },
@@ -164,8 +185,10 @@ fun RegisterScreen(navController: NavController? = null) {
         }
 
         Spacer(modifier = Modifier.height(16.dp))
+
         Button(
             onClick = {
+                emailError = if (!isEmailValid(email)) "Invalid email format" else ""
                 passwordError = password != confirmPassword
                 if (passwordError) {
                     passwordRequirementError = ""
@@ -182,11 +205,14 @@ fun RegisterScreen(navController: NavController? = null) {
         ) {
             Text(text = "Register")
         }
+
         Spacer(modifier = Modifier.height(10.dp))
+
         Text(
             text = "Already have an account? Log-in",
             modifier = Modifier.clickable { navController?.navigate("login") }
         )
+
         Spacer(modifier = Modifier.weight(1f))
     }
 }
