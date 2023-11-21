@@ -3,6 +3,7 @@ package com.example.careconnect
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -11,6 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.careconnect.ui.theme.CareConnectTheme
 
 class MainActivity : ComponentActivity() {
@@ -18,11 +23,18 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             CareConnectTheme {
+                // Navigation controller
+                val navController = rememberNavController()
+
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    LoginScreen()
+                    // Navigation Host
+                    NavHost(navController = navController, startDestination = "login") {
+                        composable("login") { LoginScreen(navController) }
+                        composable("register") { RegisterScreen() }
+                    }
                 }
             }
         }
@@ -31,7 +43,7 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen() {
+fun LoginScreen(navController: NavController? = null) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -72,7 +84,10 @@ fun LoginScreen() {
             Text(text = "Login")
         }
         Spacer(modifier = Modifier.height(10.dp))
-        Text(text = "Don't have an account? Register here")
+        Text(
+            text = "Don't have an account? Register here",
+            modifier = Modifier.clickable { navController?.navigate("register") }
+        )
         Spacer(modifier = Modifier.weight(1f)) // Flexible spacer to balance the content
     }
 }
@@ -129,6 +144,7 @@ fun RegisterScreen() {
 @Composable
 fun DefaultPreview() {
     CareConnectTheme {
+        // Static preview of the LoginScreen without navigation functionality
         LoginScreen()
     }
 }
