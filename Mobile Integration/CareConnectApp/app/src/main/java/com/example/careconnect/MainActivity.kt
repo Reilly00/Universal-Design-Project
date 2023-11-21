@@ -89,7 +89,8 @@ fun DashboardItem(item: DashboardItemModel) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 8.dp),
+            .padding(bottom = 8.dp)
+            .height(90.dp),
         shape = MaterialTheme.shapes.medium,
         onClick = { /* Handle item click here */ }
     ) {
@@ -164,7 +165,7 @@ fun BottomNavigationBar() {
                     Icon(
                         imageVector = navItem.icon,
                         contentDescription = null,
-                        modifier = Modifier.size(32.dp)
+                        modifier = Modifier.size(36.dp)
                     )
                 }
             }
