@@ -21,7 +21,7 @@ coordination by centralizing critical patient information.
 
 ## <a href="#" class="button big">Architecture of the Project:</a> [![Button 1](https://img.shields.io/badge/%22Diagram_1%22-purple.svg)](https://example.com/button1 "Tooltip Text")
 
-![Php, Html, Sql]()
+![Php, Html, Sql](https://raw.githubusercontent.com/Reilly00/Universal-Design-Project/main/IoT%20Development/System%20Architecture%20Diagram.jpg)
 
 
 ## <a href="#" class="button big">Card Reader Diagram:</a> [![Button 1](https://img.shields.io/badge/%22Diagram_2%22-purple.svg)](https://example.com/button1 "Tooltip Text")
