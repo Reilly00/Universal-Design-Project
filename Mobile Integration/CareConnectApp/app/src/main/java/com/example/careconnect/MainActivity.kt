@@ -101,29 +101,23 @@ fun DashboardItem(item: DashboardItemModel) {
             Text(
                 text = item.title,
                 color = MaterialTheme.colorScheme.secondary,
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(bottom = 8.dp),
-            )
-
-            Text(
-                text = item.subtitle,
-                style = TextStyle.Default,
-                modifier = Modifier.padding(bottom = 8.dp)
             )
         }
     }
 }
 
-data class DashboardItemModel(val title: String, val subtitle: String)
+data class DashboardItemModel(val title: String)
 
 fun getDashboardItems(): List<DashboardItemModel> {
     return listOf(
-        DashboardItemModel("Patients", "Currently assigned Patients"),
-        DashboardItemModel("Carer's Portal", "Carer Communication Portal"),
-        DashboardItemModel("Scan Details", "Scan Patient Details"),
-        DashboardItemModel("Email", "Email"),
-        DashboardItemModel("View Records", "View Patient Records"),
-        DashboardItemModel("Update Records", "Update Patient Records"),
+        DashboardItemModel("Patients"),
+        DashboardItemModel("Carer's Portal"),
+        DashboardItemModel("Scan Details"),
+        DashboardItemModel("Email"),
+        DashboardItemModel("View Records"),
+        DashboardItemModel("Update Records"),
     )
 }
 
