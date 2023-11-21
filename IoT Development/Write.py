@@ -1,4 +1,4 @@
-
+## This is a basic starting point to configure the card and tag devices.
 #!/usr/bin/env python
 
 import RPi.GPIO as GPIO
