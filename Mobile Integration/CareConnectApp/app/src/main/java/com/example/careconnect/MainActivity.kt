@@ -3,12 +3,14 @@ package com.example.careconnect
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -98,20 +100,12 @@ fun RegisterScreen(navController: NavController? = null) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
-    var emailError by remember { mutableStateOf("") } // State to track email error
-    var passwordError by remember { mutableStateOf(false) } // State to track password mismatch
-    var passwordRequirementError by remember { mutableStateOf("") } // State to track password requirements
+    var emailError by remember { mutableStateOf("") }
+    var passwordError by remember { mutableStateOf(false) }
+    var passwordRequirementError by remember { mutableStateOf("") }
 
-    // Function to check email format
-    fun isEmailValid(email: String): Boolean {
-        return email.contains("@") && email.substringAfter("@").contains(".")
-    }
-
-    // Function to check password requirements
-    fun isPasswordValid(password: String): Boolean {
-        val passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$"
-        return password.matches(passwordPattern.toRegex())
-    }
+    // Additional state for password strength
+    val passwordStrength = getPasswordStrength(password)
 
     Column(
         modifier = Modifier
@@ -148,12 +142,17 @@ fun RegisterScreen(navController: NavController? = null) {
 
         OutlinedTextField(
             value = password,
-            onValueChange = { password = it.trim() },
+            onValueChange = {
+                password = it.trim()
+            },
             label = { Text("Password") },
             singleLine = true,
             visualTransformation = PasswordVisualTransformation(),
             isError = passwordError || passwordRequirementError.isNotEmpty()
         )
+
+        // Display Password Strength Meter
+        PasswordStrengthMeter(strength = passwordStrength)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -214,6 +213,51 @@ fun RegisterScreen(navController: NavController? = null) {
         )
 
         Spacer(modifier = Modifier.weight(1f))
+    }
+}
+
+// Function to check email format
+fun isEmailValid(email: String): Boolean {
+    return email.contains("@") && email.substringAfter("@").contains(".")
+}
+
+// Function to check password requirements
+fun isPasswordValid(password: String): Boolean {
+    val passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$"
+    return password.matches(passwordPattern.toRegex())
+}
+
+// Function to check password strength
+private fun getPasswordStrength(password: String): PasswordStrength {
+    return when {
+        password.length >= 10 && password.any { it.isDigit() } && password.any { it.isUpperCase() } -> PasswordStrength.STRONG
+        password.length >= 8 -> PasswordStrength.MEDIUM
+        password.isNotEmpty() -> PasswordStrength.WEAK
+        else -> PasswordStrength.NONE
+    }
+}
+
+// Enum to represent password strength levels
+enum class PasswordStrength {
+    NONE, WEAK, MEDIUM, STRONG
+}
+
+// Composable to display password strength meter
+@Composable
+fun PasswordStrengthMeter(strength: PasswordStrength) {
+    val strengthColor = when (strength) {
+        PasswordStrength.STRONG -> Color.Green // Strong password
+        PasswordStrength.MEDIUM -> Color(0xFFFFA500) // Medium strength - Orange color
+        PasswordStrength.WEAK -> Color.Red // Weak password
+        PasswordStrength.NONE -> Color.Gray // No password entered
+    }
+
+    Row(modifier = Modifier.padding(vertical = 8.dp)) {
+        Text(text = "Password Strength: ", style = MaterialTheme.typography.bodySmall)
+        Box(modifier = Modifier
+            .width(100.dp)
+            .height(10.dp)
+            .background(strengthColor))
     }
 }
 
