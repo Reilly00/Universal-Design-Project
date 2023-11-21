@@ -9,7 +9,7 @@ comprehensive and user-friendly tool for enhancing the caregiving experience.
 ### Key Features
 Real-time Data Retrieval: The IoT prototype employs the RFID RC522 setup on a Raspberry 
 Pi to retrieve historical medical data instantly from patients with dementia, providing caregivers and medical 
-professionals as a Doctors with up-to-date information.
+professionals as Doctors with up-to-date information.
 
 ### Seamless Communication:
 Care Connect fosters a network of seamless communication, 
@@ -21,12 +21,12 @@ coordination by centralizing critical patient information.
 
 ## <a href="#" class="button big">Architecture of the Project:</a> [![Button 1](https://img.shields.io/badge/%22Diagram_1%22-purple.svg)](https://example.com/button1 "Tooltip Text")
 
-![Php, Html, Sql](https://raw.githubusercontent.com/Reilly00/Universal-Design-Project/main/IoT%20Development/arquitecture.jpg)
+![Php, Html, Sql]()
 
 
 ## <a href="#" class="button big">Card Reader Diagram:</a> [![Button 1](https://img.shields.io/badge/%22Diagram_2%22-purple.svg)](https://example.com/button1 "Tooltip Text")
 
-![Php, Html, Sql](https://raw.githubusercontent.com/Reilly00/Universal-Design-Project/main/IoT%20Development/CardReaderDiagram.jpg)
+![Php, Html, Sql](https://raw.githubusercontent.com/Reilly00/Universal-Design-Project/main/IoT%20Development/Fritzing%20QRcode%20reader.png)
 
 
 ### Overview
