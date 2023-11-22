@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
                         composable("register") { RegisterScreen(navController) }
                     }*/
 
-                    ProfileScreen()
+                    PatientsListScreen()
                 }
             }
         }
