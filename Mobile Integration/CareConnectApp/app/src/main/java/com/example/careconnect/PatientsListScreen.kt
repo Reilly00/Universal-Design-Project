@@ -13,15 +13,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun PatientsListScreen() {
     // Sample patient data
     val patients = listOf(
+        // Patient Data to be passed through
         PatientModel("Patient 1", "Margret Cole", "Diagnosis 1"),
         PatientModel("Patient 2", "Ben Martin", "Diagnosis 2"),
         PatientModel("Patient 3", "Bridget Kenna", "Diagnosis 3"),
     )
+
+    val navController = rememberNavController()
 
     // patients list screen content
     Column(
@@ -53,7 +57,10 @@ fun PatientListItem(patient: PatientModel) {
             .fillMaxWidth()
             .padding(bottom = 8.dp),
         shape = MaterialTheme.shapes.medium,
-        onClick = { /* Handle item click here */ }
+        onClick = {
+            // needs to be implemented with the nav system
+            // navController.navigate("patientDetails/${patient.name}")
+        }
     ) {
         Column(
             modifier = Modifier
@@ -76,5 +83,8 @@ fun PatientListItem(patient: PatientModel) {
     }
 }
 
+// Data model for the patients
 data class PatientModel(val number: String, val name: String, val diagnosis: String)
+
+
 

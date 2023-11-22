@@ -34,5 +34,8 @@ fun PatientDetailsScreen(patient: PatientModel) {
             color = Color.Black,
             modifier = Modifier.padding(bottom = 8.dp)
         )
+
+        // Bottom navigation bar at the end of the Column
+        BottomNavigationBar()
     }
 }
