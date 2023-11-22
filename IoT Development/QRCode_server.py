@@ -1,4 +1,30 @@
 import cv2
+import qrcode
+import os
+
+
+# === Define QRcode generator function ===
+def generate_QRcode(data):
+    qrCode = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=5,
+    )
+    qrCode.add_data(data)
+    qrCode.make(fit=True)
+    img = qrCode.make_image(fill_color="black", back_color="white")
+    img_path = f"{data}.png"
+    img.save(img_path)
+    return img_path
+
+# === Test the QR code generation  ===
+data_to_encode = "TestQRCode"
+generated_path =generate_QRcode(data_to_encode)
+print(f"QR Code generated and saved at: {generated_path}")
+
+
+
 
 # === set up camera ===
 capture = cv2.VideoCapture(0)
