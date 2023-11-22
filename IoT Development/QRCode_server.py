@@ -26,6 +26,33 @@ def generate_QRcode_WithId(patient_id):
     img.save(img_path)
     return img_path
 
+#=== Connect DataBase and Assign a QRcode for each Id ===
+def get_patient_data(patient_id):
+    try:
+        connection = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="",
+            database="patient_management"
+        )
+
+        if connection.is_connected():
+            cursor = connection.cursor(dictionary=True)
+            query = f"SELECT * FROM Patients WHERE PatientID = {patient_id}"
+            cursor.execute(query)
+            result = cursor.fetchone()
+            return result
+    except mysql.connector.Error as e:
+        print(f"Error connecting to the database: {e}")
+    finally:
+        if connection.is_connected():
+            connection.close()
+
+# Test the QR code generation with a specific patient ID
+patientId_encode = 1
+generated_path = generate_QRcode_WithId(patientId_encode)
+print(f"QR Code for Patient ID {patientId_encode} generated and saved at: {generated_path}")
+
 
 # === set up camera ===
 capture = cv2.VideoCapture(0)
