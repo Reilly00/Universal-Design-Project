@@ -1,5 +1,6 @@
 package com.example.careconnect
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -31,9 +33,10 @@ fun LoginScreen(navController: NavController? = null) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.weight(1f))
-        Text(
-            text = "Care Connect",
-            style = MaterialTheme.typography.headlineMedium
+        Image(
+            painter = painterResource(R.drawable.logo),
+            contentDescription = "Contact profile picture",
+            modifier = Modifier
         )
         Spacer(modifier = Modifier.height(128.dp))
         OutlinedTextField(
