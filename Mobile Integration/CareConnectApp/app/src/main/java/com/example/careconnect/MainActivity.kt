@@ -1,5 +1,6 @@
 package com.example.careconnect
 
+import ProfileScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -25,12 +26,16 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     // Navigation Host
+                    /*
                     NavHost(navController = navController, startDestination = "login") {
                         composable("login") { LoginScreen(navController) }
                         composable("register") { RegisterScreen(navController) }
-                    }
+                    }*/
+
+                    ProfileScreen()
                 }
             }
         }
     }
 }
+
