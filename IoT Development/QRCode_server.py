@@ -48,7 +48,7 @@ def get_patient_data(patient_id):
         if connection.is_connected():
             connection.close()
 
-# Test the QR code generation with a specific patient ID
+# === Test the QR code generation with a specific patient ID ===
 patientId_encode = 1
 generated_path = generate_QRcode_WithId(patientId_encode)
 print(f"QR Code for Patient ID {patientId_encode} generated and saved at: {generated_path}")
@@ -77,10 +77,25 @@ while True:
                     0.5, (0, 255, 0), 2)
         
         if data:
-            print("data found:", data)
-    
-    cv2.imshow("code detector", img)
-    
+            #  === Extract the patient ID from the data ===
+            _, patient_id_str = data.split(":")
+            try:
+                patient_id = int(patient_id_str)
+
+                # === Retrieve patient information from the database ===
+                patient_data = get_patient_data(patient_id)
+                
+                if patient_data:
+                    print("Patient ID:", patient_id)
+                    print("Patient Information:", patient_data)
+                else:
+                    print("Patient not found")
+
+            except ValueError:
+                print("Invalid patient ID format")
+
+    cv2.imshow("Code Detector", img)
+
     if cv2.waitKey(1) == ord("q"):
         break
 
