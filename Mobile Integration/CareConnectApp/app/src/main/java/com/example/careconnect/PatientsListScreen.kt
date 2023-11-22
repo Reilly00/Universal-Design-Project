@@ -18,9 +18,9 @@ import androidx.compose.ui.unit.dp
 fun PatientsListScreen() {
     // Sample patient data
     val patients = listOf(
-        PatientModel("Patient 1", "Margret Cole"),
-        PatientModel("Patient 2", "Ben Martin"),
-        PatientModel("Patient 3", "Bridget Kenna"),
+        PatientModel("Patient 1", "Margret Cole", "Diagnosis 1"),
+        PatientModel("Patient 2", "Ben Martin", "Diagnosis 2"),
+        PatientModel("Patient 3", "Bridget Kenna", "Diagnosis 3"),
     )
 
     // patients list screen content
@@ -76,4 +76,4 @@ fun PatientListItem(patient: PatientModel) {
     }
 }
 
-data class PatientModel(val number: String, val name: String)
+data class PatientModel(val number: String, val name: String, val diagnosis: String)
