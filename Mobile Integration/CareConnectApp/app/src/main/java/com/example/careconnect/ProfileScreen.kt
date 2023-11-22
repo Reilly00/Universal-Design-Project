@@ -45,9 +45,9 @@ import com.example.careconnect.ui.theme.CareConnectTheme
 fun ProfileScreen() {
     // Sample user details
     val userDetails = listOf(
-        UserDetailModel("Name", "John Doe"),
-        UserDetailModel("Email", "john.doe@example.com"),
-        UserDetailModel("Phone", "+1 123-456-7890"),
+        UserDetailModel("Name", "Mary Mc Donald"),
+        UserDetailModel("Email", "mcdonald.mary@gmail.com"),
+        UserDetailModel("Phone", "+353 085 123 4567"),
     )
 
     // profile screen content goes here
