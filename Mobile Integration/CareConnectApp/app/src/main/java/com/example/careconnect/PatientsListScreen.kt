@@ -77,3 +77,4 @@ fun PatientListItem(patient: PatientModel) {
 }
 
 data class PatientModel(val number: String, val name: String, val diagnosis: String)
+
