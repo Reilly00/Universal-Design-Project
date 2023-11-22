@@ -18,9 +18,9 @@ import androidx.compose.ui.unit.dp
 fun PatientsListScreen() {
     // Sample patient data
     val patients = listOf(
-        PatientModel("Margret Cole", "Diagnosis 1"),
-        PatientModel("Ben Martin", "Diagnosis 2"),
-        PatientModel("Bridget Kenna", "Diagnosis 3"),
+        PatientModel("Patient 1", "Margret Cole"),
+        PatientModel("Patient 2", "Ben Martin"),
+        PatientModel("Patient 3", "Bridget Kenna"),
     )
 
     // patients list screen content
@@ -58,14 +58,14 @@ fun PatientListItem(patient: PatientModel) {
                 .fillMaxWidth()
         ) {
             Text(
-                text = patient.name,
+                text = patient.number,
                 color = MaterialTheme.colorScheme.secondary,
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier.padding(bottom = 8.dp),
             )
 
             Text(
-                text = patient.diagnosis,
+                text = patient.name,
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
@@ -73,4 +73,4 @@ fun PatientListItem(patient: PatientModel) {
     }
 }
 
-data class PatientModel(val name: String, val diagnosis: String)
+data class PatientModel(val number: String, val name: String)
