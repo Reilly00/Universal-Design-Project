@@ -26,13 +26,10 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     // Navigation Host
-                    /*
                     NavHost(navController = navController, startDestination = "login") {
                         composable("login") { LoginScreen(navController) }
                         composable("register") { RegisterScreen(navController) }
-                    }*/
-
-                    PatientsListScreen()
+                    }
                 }
             }
         }
