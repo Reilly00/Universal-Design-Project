@@ -39,6 +39,9 @@ fun PatientsListScreen() {
                 PatientListItem(patient)
             }
         }
+
+        // Bottom navigation bar at the end of the Column
+        BottomNavigationBar()
     }
 }
 
