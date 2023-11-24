@@ -2,6 +2,10 @@ import cv2
 import qrcode
 import os
 import mysql.connector
+from pubnub.pnconfiguration import PNConfiguration
+from pubnub.pubnub import PubNub
+from pubnub.callbacks import SubscribeCallback
+from pubnub.enums import PNStatusCategory, PNOperationType
 
 # === Define QRcode generator function ===
 def generate_QRcode_WithId(patient_id):
@@ -37,6 +41,47 @@ def get_patient_data(connection, patient_id):
     except mysql.connector.Error as e:
         print(f"Error connecting to the database: {e}")
         
+
+# === PubNub Configuration ===
+pnconfig = PNConfiguration()
+pnconfig.subscribe_key = " " # Personal subscribe_key from PubNub 
+pnconfig.publish_key = " " # Personal publish_key from PubNub 
+pnconfig._uuid = "erling"  
+pubnub = PubNub(pnconfig)
+
+# === Subscribe Callback for PubNub ===
+class MySubscribeCallback(SubscribeCallback):
+    def presence(self, pubnub, presence):
+        pass
+
+    def status(self, pubnub, status):
+        print(f"Status Category: {status.category}")
+        if status.category == PNStatusCategory.PNUnexpectedDisconnectCategory:
+            pass
+
+        elif status.category == PNStatusCategory.PNConnectedCategory:
+            print("Connected to PubNub")
+            
+        elif status.category == PNStatusCategory.PNReconnectedCategory:
+            pass
+
+        elif status.category == PNStatusCategory.PNDecryptionErrorCategory:
+            pass
+
+    def message(self, pubnub, message):
+        print(message.message)
+
+pubnub.add_listener(MySubscribeCallback())
+pubnub.subscribe().channels("careconnect").execute() 
+
+
+
+def handle_publish(result, status):
+    if not status.is_error():
+        print("Message published successfully")
+    else:
+        print(f"Error publishing message: {status.error_data}")
+
         
 try:           
     connection = mysql.connector.connect(
@@ -91,6 +136,12 @@ try:
                         if patient_data:
                            print("Patient ID:", patient_id)
                            print("Patient Information:", patient_data)
+                           
+                           
+                           # === Publish patient data to PubNub ===
+                           pubnub.publish().channel("careconnect").message(patient_data).pn_async(lambda result, status: handle_publish(result, status))
+
+                           
                         else:
                            print("Patient not found")
 
