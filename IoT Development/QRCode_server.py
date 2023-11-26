@@ -57,8 +57,8 @@ def detect_qrcode(image_path):
 
 # === PubNub Configuration ===
 pnconfig = PNConfiguration()
-pnconfig.subscribe_key = "sub-c-397c95e0-69bd-460b-be3a-76b966f22ac7" 
-pnconfig.publish_key = "pub-c-722f5c5e-5048-4c97-b20e-1b9e16eb6444" 
+pnconfig.subscribe_key = " " # === personal subscribe key from PubNub ===
+pnconfig.publish_key = " "  # === personal publish key from PubNub ===
 pnconfig.user_id = "erling"  
 pubnub = PubNub(pnconfig)
 
@@ -98,7 +98,7 @@ try:
     connection = mysql.connector.connect(
         host="localhost",
         user="root",
-        password="erling",
+        password=" ", # === personal password ===
         database="patient_management",
     )
     
