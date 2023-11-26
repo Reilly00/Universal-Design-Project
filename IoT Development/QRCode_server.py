@@ -1,14 +1,20 @@
-import cv2
-import qrcode
+
+import json
 import os
 import mysql.connector
+from PIL import Image
+import qrcode
+from zbarlight import scan_codes
+from picamera import PiCamera
+from picamera.array import PiRGBArray
+from time import sleep
 from pubnub.pnconfiguration import PNConfiguration
 from pubnub.pubnub import PubNub
 from pubnub.callbacks import SubscribeCallback
-from pubnub.enums import PNStatusCategory, PNOperationType
+from pubnub.enums import PNStatusCategory
 
 # === Define QRcode generator function ===
-def generate_QRcode_WithId(patient_id):
+def generate_qrcode_with_id(patient_id):
     data = f"PatientID:{patient_id}"
     
     # === Create folder to save QRCode pictures ===
@@ -29,10 +35,11 @@ def generate_QRcode_WithId(patient_id):
     img.save(img_path)
     return img_path
 
+
 #=== Connect DataBase and Assign a QRcode for each Id ===
 def get_patient_data(connection, patient_id):
     try:
-         if connection.is_connected():
+        if connection.is_connected():
             cursor = connection.cursor(dictionary=True)
             query = f"SELECT * FROM Patients WHERE PatientID = {patient_id}"
             cursor.execute(query)
@@ -40,13 +47,19 @@ def get_patient_data(connection, patient_id):
             return result
     except mysql.connector.Error as e:
         print(f"Error connecting to the database: {e}")
-        
+
+
+def detect_qrcode(image_path):
+    with open(image_path, 'rb') as image_file:
+        image = Image.open(image_file)
+        codes = scan_codes(['qrcode'], image)
+        return codes[0].decode('utf-8') if codes else None
 
 # === PubNub Configuration ===
 pnconfig = PNConfiguration()
-pnconfig.subscribe_key = " " # Personal subscribe_key from PubNub 
-pnconfig.publish_key = " " # Personal publish_key from PubNub 
-pnconfig._uuid = "erling"  
+pnconfig.subscribe_key = "sub-c-397c95e0-69bd-460b-be3a-76b966f22ac7" 
+pnconfig.publish_key = "pub-c-722f5c5e-5048-4c97-b20e-1b9e16eb6444" 
+pnconfig.user_id = "erling"  
 pubnub = PubNub(pnconfig)
 
 # === Subscribe Callback for PubNub ===
@@ -74,87 +87,79 @@ class MySubscribeCallback(SubscribeCallback):
 pubnub.add_listener(MySubscribeCallback())
 pubnub.subscribe().channels("careconnect").execute() 
 
-
-
+# === Handle publish result ===
 def handle_publish(result, status):
     if not status.is_error():
         print("Message published successfully")
     else:
         print(f"Error publishing message: {status.error_data}")
-
-        
-try:           
+# === Connect to the database ===
+try:
     connection = mysql.connector.connect(
         host="localhost",
         user="root",
-        password="",
-        database="patient_management"
+        password="erling",
+        database="patient_management",
     )
-
+    
+    # === Check if the connection is successful ===
     if connection.is_connected():
+        print("Connected to MySQL")
+        
         cursor = connection.cursor()
         cursor.execute("SELECT PatientID FROM Patients")
         patient_ids = [row[0] for row in cursor.fetchall()]
 
- 
-    # === Test the QR code generation with a specific patient ID ===
+        # === Test the QR code generation with a specific patient ID ===
         for patient_id in patient_ids:
-            generated_path = generate_QRcode_WithId(patient_id)
+            generated_path = generate_qrcode_with_id(patient_id)
             print(f"QR Code for Patient ID {patient_id} generated and saved at: {generated_path}")
 
-        # === set up camera ===
-        capture = cv2.VideoCapture(0)
+        # === set up PiCamera ===
+        camera = PiCamera()
+        camera.resolution = (640, 480)
+        raw_capture = PiRGBArray(camera, size=(640, 480))
 
-        # === QR code detection ===
-        detector = cv2.QRCodeDetector()
+        sleep(2)
 
-        while True:
-            _, img = capture.read()
-    
-        # === bounding box coordenates and data ===
-            data, bbox, _ = detector.detectAndDecode(img)
-    
-    # === Bounding  a box if not found it, draw one, and then, display the data ===
-            if bbox is not None:
-                for i in range(len(bbox)):
-                    point1 = (int(bbox[i][0][0]), int(bbox[i][0][1]))
-                    point2 = (int(bbox[(i+1) % len(bbox)][0][0]), int(bbox[(i+1) % len(bbox)][0][1]))
-                    cv2.line(img, point1, point2, color=(255, 0, 255), thickness=2)
-            
-                cv2.putText(img, data, (int(bbox[0][0][0]), int(bbox[0][0][1]) - 10), cv2.FONT_HERSHEY_SIMPLEX,
-                    0.5, (0, 255, 0), 2)
-        
-                if data:
-                    #  === Extract the patient ID from the data ===
-                    _, patient_id_str = data.split(":")
-                    try:
-                        patient_id = int(patient_id_str)
+        # === Continuously capture images from the camera ===
+        for frame in camera.capture_continuous(raw_capture, format="bgr", use_video_port=True):
+            image = frame.array
+
+            # === Save the captured image ===
+            image_path = "qrcodes/captured_image.png"
+            Image.fromarray(image).save(image_path)
+
+            # === detect QR code ===
+            qr_data = detect_qrcode(image_path)
+
+            if qr_data:
+                # === Extract the patient ID from the data ===
+                _, patient_id_str = qr_data.split(":")
+                try:
+                    patient_id = int(patient_id_str)
 
                     # === Retrieve patient information from the database ===
-                        patient_data = get_patient_data(connection, patient_id)
-                
-                        if patient_data:
-                           print("Patient ID:", patient_id)
-                           print("Patient Information:", patient_data)
-                           
-                           
-                           # === Publish patient data to PubNub ===
-                           pubnub.publish().channel("careconnect").message(patient_data).pn_async(lambda result, status: handle_publish(result, status))
+                    patient_data = get_patient_data(connection, patient_id)
 
-                           
-                        else:
-                           print("Patient not found")
+                    if patient_data:
+                        print("Patient ID:", patient_id)
+                        print("Patient Information:", patient_data)
 
-                    except ValueError:
-                            print("Invalid patient ID format")
+                        # === Publish patient data to PubNub ===
+                        pubnub.publish().channel("careconnect").message(patient_data).pn_async(lambda result, status: handle_publish(result, status))
+                    else:
+                        print("Patient not found")
 
-            cv2.imshow("Code Detector", img)
+                except ValueError:
+                    print("Invalid patient ID format")
 
-            if cv2.waitKey(1) == ord("q"):
-                break
+            # === Clear the stream in preparation for the next frame ===
+            raw_capture.truncate(0)
+
+except KeyboardInterrupt:
+    print("\nProgram interrupted")
 finally:
-    if connection.is_connected():
+    if 'connection' in locals() and connection.is_connected():
         connection.close()
-        
-    capture.release()
-    cv2.destroyAllWindows()
+        print("MySQL connection closed.")

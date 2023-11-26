@@ -1,4 +1,3 @@
-
 DROP DATABASE IF EXISTS patient_management;
 
 
@@ -14,7 +13,7 @@ CREATE TABLE Doctors (
     FirstName VARCHAR(50) NOT NULL,
     LastName VARCHAR(50) NOT NULL,
     Specialty VARCHAR(50),
-	PhoneNumber VARCHAR(15)
+	  PhoneNumber VARCHAR(15)
 );
 
 CREATE TABLE Caregivers (
@@ -26,7 +25,7 @@ CREATE TABLE Caregivers (
 
 CREATE TABLE Patients (
     PatientID INT PRIMARY KEY,
-	DoctorID INT,
+	  DoctorID INT,
     CaregiverID INT,
     FirstName VARCHAR(50) NOT NULL,
     LastName VARCHAR(50) NOT NULL,
