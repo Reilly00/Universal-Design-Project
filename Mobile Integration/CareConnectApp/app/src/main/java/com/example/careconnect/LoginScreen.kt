@@ -60,7 +60,10 @@ fun LoginScreen(navController: NavController? = null) {
             modifier = Modifier.fillMaxWidth(fraction = 0.5f),
             contentPadding = PaddingValues(16.dp)
         ) {
-            Text(text = "Login")
+            Text(
+                text = "Login",
+                modifier = Modifier.clickable { navController?.navigate("dashboard") }
+            )
         }
         Spacer(modifier = Modifier.height(10.dp))
         Text(

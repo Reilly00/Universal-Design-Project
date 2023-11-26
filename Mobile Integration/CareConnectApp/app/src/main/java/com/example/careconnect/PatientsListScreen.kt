@@ -13,10 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun PatientsListScreen() {
+fun PatientsListScreen(navController: NavController) {
     // Sample patient data
     val patients = listOf(
         // Patient Data to be passed through
@@ -25,66 +26,38 @@ fun PatientsListScreen() {
         PatientModel("Patient 3", "Bridget Kenna", "Diagnosis 3"),
     )
 
-    val navController = rememberNavController()
-
     // patients list screen content
-    Column(
-        modifier = Modifier.padding(16.dp)
-    ) {
-        Text(
-            text = "Patients List",
-            style = MaterialTheme.typography.titleLarge,
-            color = Color.Black,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text("Patients List", style = MaterialTheme.typography.titleLarge, color = Color.Black, modifier = Modifier.padding(bottom = 16.dp))
 
         LazyColumn {
             items(patients) { patient ->
-                PatientListItem(patient)
+                PatientListItem(patient, navController) // Pass NavController here
             }
         }
 
-        // Bottom navigation bar at the end of the Column
         BottomNavigationBar()
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PatientListItem(patient: PatientModel) {
+fun PatientListItem(patient: PatientModel, navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 8.dp),
         shape = MaterialTheme.shapes.medium,
         onClick = {
-            // needs to be implemented with the nav system
-            // navController.navigate("patientDetails/${patient.name}")
+            navController.navigate("patientDetails/${patient.name}") // Navigate to PatientDetailsScreen
         }
     ) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
-        ) {
-            Text(
-                text = patient.number,
-                color = MaterialTheme.colorScheme.secondary,
-                style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier.padding(bottom = 8.dp),
-            )
-
-            Text(
-                text = patient.name,
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
+        Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
+            Text(patient.number, color = MaterialTheme.colorScheme.secondary, style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(bottom = 8.dp))
+            Text(patient.name, style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(bottom = 8.dp))
         }
     }
 }
 
 // Data model for the patients
 data class PatientModel(val number: String, val name: String, val diagnosis: String)
-
-
-
