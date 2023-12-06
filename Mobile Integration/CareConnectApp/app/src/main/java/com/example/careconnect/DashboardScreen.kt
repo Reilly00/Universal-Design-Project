@@ -32,8 +32,8 @@ fun DashboardScreen(navController: NavController? = null) {
             .padding(top = 32.dp, start = 16.dp, end = 16.dp)
     ) {
         Text(
-            text = "Dashboard",
-            modifier = Modifier.padding(bottom = 70.dp),
+            text = "Care Connect",
+            modifier = Modifier.padding(bottom = 60.dp),
             style = MaterialTheme.typography.titleMedium
         )
 
@@ -128,12 +128,12 @@ data class DashboardItemModel(val title: String, val imageResourceId: Int)
 
 fun getDashboardItems(): List<DashboardItemModel> {
     return listOf(
-        DashboardItemModel("Patients"),
-        DashboardItemModel("Carer's Portal"),
-        DashboardItemModel("Scan Details"),
-        DashboardItemModel("Email"),
-        DashboardItemModel("View Records"),
-        DashboardItemModel("Update Record"),
+        DashboardItemModel("Patients", R.drawable.patient),
+        DashboardItemModel("Carer's Portal", R.drawable.careportal),
+        DashboardItemModel("Scan Details", R.drawable.qrcode),
+        DashboardItemModel("Email", R.drawable.email),
+        DashboardItemModel("View Records", R.drawable.record),
+        DashboardItemModel("Update Record", R.drawable.updated),
     )
 }
 
