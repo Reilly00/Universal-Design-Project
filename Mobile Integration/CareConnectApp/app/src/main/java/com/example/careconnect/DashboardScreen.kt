@@ -19,10 +19,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.careconnect.ui.theme.CareConnectTheme
+
 
 @Composable
 fun DashboardScreen(navController: NavController? = null) {
@@ -32,24 +35,27 @@ fun DashboardScreen(navController: NavController? = null) {
             .padding(top = 32.dp, start = 16.dp, end = 16.dp)
     ) {
         Text(
-            text = "Care Connect",
-            modifier = Modifier.padding(bottom = 60.dp),
-            style = MaterialTheme.typography.titleMedium
+            text = "Dashboard",
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 35.dp),
+            style = MaterialTheme.typography.titleLarge
+                .copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),
+            textAlign = TextAlign.Center
         )
 
         LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(30.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
             items(getDashboardItems().chunked(2)) { rowItems ->
                 TwoItemRow(rowItems, navController)
             }
         }
 
-        // Bottom navigation bar at the end of the Column
+
         BottomNavigationBar()
     }
 }
-
 
 @Composable
 fun TwoItemRow(items: List<DashboardItemModel>, navController: NavController?) {
@@ -57,14 +63,13 @@ fun TwoItemRow(items: List<DashboardItemModel>, navController: NavController?) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(27.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         items(items) { dashboardItem ->
             DashboardItem(dashboardItem, navController)
         }
     }
 }
-
 
 @Composable
 fun DashboardItem(item: DashboardItemModel, navController: NavController?) {
@@ -76,9 +81,10 @@ fun DashboardItem(item: DashboardItemModel, navController: NavController?) {
                 if (item.title == "Patients") {
                     navController?.navigate("patientsList")
                 }
-                // Add additional navigation logic for other items if necessary
+
             },
-        shape = MaterialTheme.shapes.medium
+        shape = MaterialTheme.shapes.medium,
+
     ) {
         Box(
             modifier = Modifier
@@ -87,7 +93,7 @@ fun DashboardItem(item: DashboardItemModel, navController: NavController?) {
                     if (item.title == "Patients") {
                         navController?.navigate("patientsList")
                     }
-                    // Add additional navigation logic for other items if necessary
+
                 },
         ) {
             Column(
@@ -104,25 +110,19 @@ fun DashboardItem(item: DashboardItemModel, navController: NavController?) {
                         .size(80.dp)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(40.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = item.title,
-                        color = MaterialTheme.colorScheme.secondary,
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold
-                        ), modifier = Modifier
-                            .wrapContentSize()
-                    )
-                }
+                Text(
+                    text = item.title,
+                    color = MaterialTheme.colorScheme.secondary,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold
+                    ), modifier = Modifier
+                        .wrapContentSize()
+                )
             }
         }
     }
 }
+
 
 data class DashboardItemModel(val title: String, val imageResourceId: Int)
 
@@ -137,11 +137,6 @@ fun getDashboardItems(): List<DashboardItemModel> {
     )
 }
 
-
-//@Composable
-//fun BottomNavigationBar() {
-//    // Implement your Bottom Navigation Bar here
-//}
 
 @Preview(showBackground = true)
 @Composable
