@@ -1,5 +1,6 @@
 package com.example.careconnect
 
+import android.widget.GridLayout
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -12,14 +13,19 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.BottomCenter
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.careconnect.ui.theme.CareConnectTheme
+
 
 @Composable
 fun DashboardScreen(navController: NavController? = null) {
@@ -30,31 +36,34 @@ fun DashboardScreen(navController: NavController? = null) {
     ) {
         Text(
             text = "Dashboard",
-            modifier = Modifier.padding(bottom = 140.dp),
-            style = MaterialTheme.typography.titleMedium
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 35.dp),
+            style = MaterialTheme.typography.titleLarge
+                .copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),
+            textAlign = TextAlign.Center
         )
 
         LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(30.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
             items(getDashboardItems().chunked(2)) { rowItems ->
                 TwoItemRow(rowItems, navController)
             }
         }
 
-        // Bottom navigation bar at the end of the Column
+
         BottomNavigationBar()
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TwoItemRow(items: List<DashboardItemModel>, navController: NavController?) {
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(27.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         items(items) { dashboardItem ->
             DashboardItem(dashboardItem, navController)
@@ -62,70 +71,72 @@ fun TwoItemRow(items: List<DashboardItemModel>, navController: NavController?) {
     }
 }
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardItem(item: DashboardItemModel, navController: NavController?) {
     Card(
         modifier = Modifier
             .width(152.dp)
-            .height(152.dp),
+            .height(152.dp)
+            .clickable {
+                if (item.title == "Patients") {
+                    navController?.navigate("patientsList")
+                }
+
+            },
         shape = MaterialTheme.shapes.medium,
-        onClick = {
-            if (item.title == "Patients") {
-                navController?.navigate("patientsList")
-            }
-            // Add additional navigation logic for other items if necessary
-        }
+
     ) {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .clickable {
                     if (item.title == "Patients") {
                         navController?.navigate("patientsList")
                     }
-                    // Add additional navigation logic for other items if necessary
+
                 },
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.heart),
-                contentDescription = null,
+            Column(
                 modifier = Modifier
-                    .size(80.dp)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = item.title,
-                color = MaterialTheme.colorScheme.secondary,
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.CenterHorizontally) 
-            )
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(id = item.imageResourceId),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(80.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = item.title,
+                    color = MaterialTheme.colorScheme.secondary,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold
+                    ), modifier = Modifier
+                        .wrapContentSize()
+                )
+            }
         }
     }
 }
 
-data class DashboardItemModel(val title: String)
+
+data class DashboardItemModel(val title: String, val imageResourceId: Int)
 
 fun getDashboardItems(): List<DashboardItemModel> {
     return listOf(
-        DashboardItemModel("      Patients"),
-        DashboardItemModel(" Carer's Portal"),
-        DashboardItemModel("   Scan Details"),
-        DashboardItemModel("        Email"),
-        DashboardItemModel("  View Records"),
-        DashboardItemModel(" Update Record"),
+        DashboardItemModel("Patients", R.drawable.patient),
+        DashboardItemModel("Carer's Portal", R.drawable.careportal),
+        DashboardItemModel("Scan Details", R.drawable.qrcode),
+        DashboardItemModel("Email", R.drawable.email),
+        DashboardItemModel("View Records", R.drawable.record),
+        DashboardItemModel("Update Record", R.drawable.updated),
     )
 }
 
-//@Composable
-//fun BottomNavigationBar() {
-//    // Implement your Bottom Navigation Bar here
-//}
 
 @Preview(showBackground = true)
 @Composable
