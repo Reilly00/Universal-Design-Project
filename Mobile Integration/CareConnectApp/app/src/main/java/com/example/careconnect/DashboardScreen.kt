@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -25,14 +26,17 @@ fun DashboardScreen(navController: NavController? = null) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(top = 32.dp, start = 16.dp, end = 16.dp)
     ) {
         Text(
             text = "Dashboard",
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.padding(bottom = 140.dp),
+            style = MaterialTheme.typography.titleMedium
         )
 
-        LazyColumn {
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(30.dp),
+        ) {
             items(getDashboardItems().chunked(2)) { rowItems ->
                 TwoItemRow(rowItems, navController)
             }
@@ -46,22 +50,26 @@ fun DashboardScreen(navController: NavController? = null) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TwoItemRow(items: List<DashboardItemModel>, navController: NavController?) {
-    LazyRow {
+    LazyRow(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(27.dp),
+    ) {
         items(items) { dashboardItem ->
             DashboardItem(dashboardItem, navController)
         }
     }
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardItem(item: DashboardItemModel, navController: NavController?) {
     Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(end = 8.dp)
-            .height(90.dp)
-            .aspectRatio(1f),
+            .width(152.dp)
+            .height(152.dp),
         shape = MaterialTheme.shapes.medium,
         onClick = {
             if (item.title == "Patients") {
@@ -74,42 +82,55 @@ fun DashboardItem(item: DashboardItemModel, navController: NavController?) {
             modifier = Modifier
                 .fillMaxSize()
                 .clickable {
-                    // Add clickable modifier to the entire column
                     if (item.title == "Patients") {
                         navController?.navigate("patientsList")
                     }
                     // Add additional navigation logic for other items if necessary
-                }
+                },
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-             Image(
+            Image(
                 painter = painterResource(id = R.drawable.heart),
                 contentDescription = null,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.8f)
+                    .size(80.dp)
             )
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = item.title,
                 color = MaterialTheme.colorScheme.secondary,
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier
-                    .padding(bottom = 8.dp)
                     .fillMaxWidth()
+                    .align(Alignment.CenterHorizontally) 
             )
         }
     }
 }
 
-
 data class DashboardItemModel(val title: String)
 
 fun getDashboardItems(): List<DashboardItemModel> {
     return listOf(
-        DashboardItemModel("Patients"),
-        DashboardItemModel("Carer's Portal"),
-        DashboardItemModel("Scan Details"),
-        DashboardItemModel("Email"),
-        DashboardItemModel("View Records"),
-        DashboardItemModel("Update Records"),
+        DashboardItemModel("      Patients"),
+        DashboardItemModel(" Carer's Portal"),
+        DashboardItemModel("   Scan Details"),
+        DashboardItemModel("        Email"),
+        DashboardItemModel("  View Records"),
+        DashboardItemModel(" Update Record"),
     )
+}
+
+//@Composable
+//fun BottomNavigationBar() {
+//    // Implement your Bottom Navigation Bar here
+//}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewDashboard() {
+    CareConnectTheme {
+        DashboardScreen()
+    }
 }
