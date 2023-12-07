@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
@@ -21,7 +22,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-
 @Composable
 fun BottomNavigationBar() {
     val navItems = listOf(
@@ -30,6 +30,8 @@ fun BottomNavigationBar() {
         BottomNavItem("Notifications", Icons.Default.Notifications),
         BottomNavItem("Profile", Icons.Default.Person),
     )
+
+    val customBackgroundColor = Color(0xFFBB99A5).copy(alpha = 1f)
 
     Box(
         modifier = Modifier
@@ -41,7 +43,6 @@ fun BottomNavigationBar() {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                //.background(color = Color.Blue)
                 .align(Alignment.BottomCenter)
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceAround
@@ -52,11 +53,18 @@ fun BottomNavigationBar() {
                 IconButton(
                     onClick = {
                         // Handle navigation to the corresponding screen
-                    }
+                    },
+                    modifier = Modifier
+                        .background(
+                            //color = Color.Magenta,
+                           color= customBackgroundColor,
+                            shape = CircleShape
+                        )
                 ) {
                     Icon(
                         imageVector = navItem.icon,
                         contentDescription = null,
+                        tint = Color.White,
                         modifier = Modifier.size(36.dp)
                     )
                 }

@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity() {
                                 // Handle the case where the patient is not found
                             }
                         }
-                    }
+                         }
                 }
             }
         }
