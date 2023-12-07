@@ -19,16 +19,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.careconnect.ui.theme.CareConnectTheme
 
 @Composable
-fun NotificationsScreen() {
+fun NotificationsScreen(navController: NavController) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
         NotificationsContent()
-        BottomNavigationBar()
+        navController?.let { BottomNavigationBar(it) }
     }
 }
 

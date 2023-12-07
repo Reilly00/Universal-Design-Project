@@ -54,6 +54,6 @@ fun MedicalRecord(record: RecordModel, navController: NavController) {
         }
 
         // Bottom navigation bar at the end of the Column
-        BottomNavigationBar()
+        navController?.let { BottomNavigationBar(it) }
     }
 }

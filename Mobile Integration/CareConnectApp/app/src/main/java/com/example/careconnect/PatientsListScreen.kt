@@ -36,7 +36,7 @@ fun PatientsListScreen(navController: NavController) {
             }
         }
 
-        BottomNavigationBar()
+        navController?.let { BottomNavigationBar(it) }
     }
 }
 

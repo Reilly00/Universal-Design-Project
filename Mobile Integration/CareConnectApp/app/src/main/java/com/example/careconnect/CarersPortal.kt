@@ -24,16 +24,17 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.careconnect.ui.theme.CareConnectTheme
 
 @Composable
-fun CarersPortal() {
+fun CarersPortal(navController: NavController? = null) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
         MessagingContent()
-        BottomNavigationBar()
+        navController?.let { BottomNavigationBar(it) }
     }
 }
 
