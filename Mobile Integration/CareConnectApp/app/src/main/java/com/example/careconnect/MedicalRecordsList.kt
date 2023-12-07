@@ -21,9 +21,9 @@ fun MedicalRecordsList(navController: NavController) {
     // Sample record data
     val records = listOf(
         // Patient Data to be passed through
-        RecordModel("Record 1", "2023-01-01"),
-        RecordModel("Record 2", "2023-02-15"),
-        RecordModel("Record 3", "2023-03-20"),
+        RecordModel(1,"Record 1", "2023-01-01"),
+        RecordModel(2, "Record 2", "2023-02-15"),
+        RecordModel(3, "Record 3", "2023-03-20"),
     )
 
     // records list screen content
@@ -60,4 +60,4 @@ fun RecordListItem(record: RecordModel, navController: NavController) {
 }
 
 // Data model for the records
-data class RecordModel(val title: String, val date: String)
+data class RecordModel(val id: Int, val title: String, val date: String)
