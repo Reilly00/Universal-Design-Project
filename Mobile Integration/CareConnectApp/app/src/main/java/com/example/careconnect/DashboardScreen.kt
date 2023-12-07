@@ -89,6 +89,7 @@ fun DashboardItem(item: DashboardItemModel, navController: NavController?) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Color(0xFFBB99A5))
                 .clickable {
                     if (item.title == "Patients") {
                         navController?.navigate("patientsList")
