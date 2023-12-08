@@ -1,12 +1,14 @@
 import os
 import uuid
-import pymysql
 import logging
-from flask import Flask
+import pymysql
+import bcrypt
+from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 from pubnub.pubnub import PubNub, SubscribeCallback
 from pubnub.pnconfiguration import PNConfiguration
 
+# Load environment variables
 load_dotenv()
 
 app = Flask(__name__)
@@ -29,43 +31,72 @@ pnconfig.ssl = True
 
 pubnub = PubNub(pnconfig)
 
-def insert_patient_data(patient_data):
+# Database helper functions
+def hash_password(password):
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+def verify_password(plain_text_password, hashed_password):
+    return bcrypt.checkpw(plain_text_password.encode('utf-8'), hashed_password.encode('utf-8'))
+
+def insert_user(username, email, password_hash):
     connection = pymysql.connect(**db_config)
     try:
         with connection.cursor() as cursor:
-            sql = "INSERT INTO Patients (PatientID, CaregiverID, FirstName, LastName, Address, PhoneNumber, ClinicalHistory) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-            cursor.execute(sql, (
-                patient_data['PatientID'],
-                patient_data['CaregiverID'],
-                patient_data['FirstName'],
-                patient_data['LastName'],
-                patient_data['Address'],
-                patient_data['PhoneNumber'],
-                patient_data['ClinicalHistory']
-            ))
+            sql = "INSERT INTO users (username, email, password_hash) VALUES (%s, %s, %s)"
+            cursor.execute(sql, (username, email, password_hash))
         connection.commit()
     finally:
         connection.close()
 
-logging.basicConfig(filename='app.log', level=logging.INFO)
+def get_user(username):
+    connection = pymysql.connect(**db_config)
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:  # Use DictCursor
+            sql = "SELECT * FROM users WHERE username = %s"
+            cursor.execute(sql, (username,))
+            return cursor.fetchone()
+    finally:
+        connection.close()
 
-class MySubscribeCallback(SubscribeCallback):
-    def message(self, pubnub, message):
-        logging.info(f"Received message: {message.message}")
-        print("Received PubNub message:", message.message)
-        insert_patient_data(message.message)
-
-pubnub.add_listener(MySubscribeCallback())
-pubnub.subscribe().channels('careconnect').execute()
-
+# Flask routes
 @app.route('/')
 def index():
     return "Connected to the database!"
 
-@app.route('/users')
-def list_users():
-    # Implement logic to retrieve and display users if needed
-    return "User listing endpoint"
+@app.route('/register', methods=['POST'])
+def register():
+    data = request.json
+    username = data['username']
+    email = data['email']
+    password = data['password']
+
+    hashed_password = hash_password(password)
+    insert_user(username, email, hashed_password)
+
+    return jsonify({"message": "User registered successfully"}), 201
+
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.json
+    username = data['username']
+    password = data['password']
+
+    user = get_user(username)
+    if user and verify_password(password, user['password_hash']):
+        return jsonify({"message": "Login successful"}), 200
+    else:
+        return jsonify({"message": "Invalid username or password"}), 401
+
+# PubNub subscription callback
+class MySubscribeCallback(SubscribeCallback):
+    def message(self, pubnub, message):
+        logging.info(f"Received message: {message.message}")
+        print("Received PubNub message:", message.message)
+        # Add logic for handling incoming PubNub messages
+        # For example, inserting patient data into the database
 
 if __name__ == '__main__':
+    logging.basicConfig(filename='app.log', level=logging.INFO)
+    pubnub.add_listener(MySubscribeCallback())
+    pubnub.subscribe().channels('careconnect').execute()
     app.run(debug=True)
