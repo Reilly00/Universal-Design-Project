@@ -1,6 +1,7 @@
 package com.example.careconnect
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,21 +15,31 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(navController: NavController? = null) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
+    val lightPinkColor = Color(0xFFF1E0E6)
+    val strongerPinkColor = Color(0xFF947B83)
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(lightPinkColor, strongerPinkColor),
+                    startY = -1.5f,
+                    endY = 2800f
+                )
+            ),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -42,14 +53,14 @@ fun LoginScreen(navController: NavController? = null) {
         OutlinedTextField(
             value = username,
             onValueChange = { username = it.trim() },
-            label = { Text("Email") },
+            label = { Text("Email", color = Color.Black) },
             singleLine = true
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
             value = password,
             onValueChange = { password = it.trim() },
-            label = { Text("Password") },
+            label = { Text("Password", color = Color.Black) },
             singleLine = true,
             visualTransformation = PasswordVisualTransformation()
         )
@@ -62,14 +73,16 @@ fun LoginScreen(navController: NavController? = null) {
         ) {
             Text(
                 text = "Login",
+                color = Color.White, // Set button text color
                 modifier = Modifier.clickable { navController?.navigate("dashboard") }
             )
         }
         Spacer(modifier = Modifier.height(10.dp))
         Text(
             text = "Don't have an account? Register here",
+            color = Color.Black, // Set text color
             modifier = Modifier.clickable { navController?.navigate("register") }
         )
-        Spacer(modifier = Modifier.weight(1f)) // Flexible spacer to balance the content
+        Spacer(modifier = Modifier.weight(1f))
     }
 }

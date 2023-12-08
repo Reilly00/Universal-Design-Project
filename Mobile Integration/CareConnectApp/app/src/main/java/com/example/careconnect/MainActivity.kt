@@ -47,6 +47,7 @@ class MainActivity : ComponentActivity() {
                                 // Handle the case where the patient is not found
                             }
                         }
+
                         composable("recordDetails/{recordTitle}") { backStackEntry ->
                             val recordTitle = backStackEntry.arguments?.getString("recordTitle")
                             val record = getRecordByTitle(recordTitle ?: "")
@@ -90,3 +91,22 @@ class MainActivity : ComponentActivity() {
         return records.find { it.title == title }
     }
 }
+
+    fun getPatientByName(name: String): PatientModel? {
+        val patients = listOf(
+            PatientModel("Patient 1", "Margret Cole", "Diagnosis 1"),
+            PatientModel("Patient 2", "Ben Martin", "Diagnosis 2"),
+            PatientModel("Patient 3", "Bridget Kenna", "Diagnosis 3"),
+        )
+        return patients.find { it.name == name }
+    }
+
+    fun getRecordByTitle(title: String): RecordModel? {
+        val records = listOf(
+            RecordModel(1, "Record 1", "2023-01-01"),
+            RecordModel(2, "Record 2", "2023-02-15"),
+            RecordModel(3, "Record 3", "2023-03-20"),
+            // Add more records as needed
+        )
+        return records.find { it.title == title }
+    }
