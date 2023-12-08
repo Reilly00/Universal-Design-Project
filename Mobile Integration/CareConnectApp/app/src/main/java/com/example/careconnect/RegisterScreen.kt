@@ -23,6 +23,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.compose.foundation.layout.*
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,6 +35,8 @@ fun RegisterScreen(navController: NavController? = null) {
     var emailError by remember { mutableStateOf("") }
     var passwordError by remember { mutableStateOf(false) }
     var passwordRequirementError by remember { mutableStateOf("") }
+    var registrationStatus by remember { mutableStateOf<RegistrationStatus>(RegistrationStatus.NONE) }
+    val coroutineScope = rememberCoroutineScope()
 
     // Additional state for password strength
     val passwordStrength = getPasswordStrength(password)
@@ -123,10 +127,19 @@ fun RegisterScreen(navController: NavController? = null) {
                 if (passwordError) {
                     passwordRequirementError = ""
                 } else if (!isPasswordValid(password)) {
-                    passwordRequirementError = "Password must:\n Be at least 8 characters, \n include an uppercase letter, \n a lowercase letter, symbol, and a number."
+                    passwordRequirementError = "Password must: \nBe at least 8 characters, \ninclude an uppercase letter, \nlowercase letter, symbol, and a number."
                 } else {
                     passwordRequirementError = ""
-                    // TODO: Add registration logic here if passwords match and meet requirements
+                    coroutineScope.launch {
+                        val response = RetrofitClient.instance.registerUser(
+                            RegistrationData(username = email, email = email, password = password)
+                        )
+                        registrationStatus = if (response.isSuccessful) {
+                            RegistrationStatus.SUCCESS
+                        } else {
+                            RegistrationStatus.ERROR
+                        }
+                    }
                 }
             },
             shape = MaterialTheme.shapes.medium,
@@ -134,6 +147,15 @@ fun RegisterScreen(navController: NavController? = null) {
             contentPadding = PaddingValues(16.dp)
         ) {
             Text(text = "Register")
+        }
+
+        when (registrationStatus) {
+            RegistrationStatus.SUCCESS -> {
+                Text("Registration successful")
+                // Optionally navigate to login or another screen
+            }
+            RegistrationStatus.ERROR -> Text("Registration failed", color = Color.Red)
+            else -> {} // Do nothing for NONE
         }
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -163,4 +185,8 @@ fun PasswordStrengthMeter(strength: PasswordStrength) {
             .height(10.dp)
             .background(strengthColor))
     }
+}
+
+enum class RegistrationStatus {
+    NONE, SUCCESS, ERROR
 }
