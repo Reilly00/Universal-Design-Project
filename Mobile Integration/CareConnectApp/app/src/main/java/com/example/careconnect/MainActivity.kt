@@ -1,5 +1,6 @@
 package com.example.careconnect
 
+import ProfileScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -30,6 +31,13 @@ class MainActivity : ComponentActivity() {
                         composable("register") { RegisterScreen(navController) }
                         composable("dashboard") { DashboardScreen(navController) }
                         composable("patientsList") { PatientsListScreen(navController) }
+                        composable("carersPortal") { CarersPortal(navController) }
+                        composable("scanDetails") { ScanDetailsScreen(navController) }
+                        composable("emailScreen") { EmailScreen(navController) }
+                        composable("viewRecords") { MedicalRecordsList(navController) }
+                        composable("settings") { SettingsScreen(navController) }
+                        composable("notifications") { NotificationsScreen(navController) }
+                        composable("profile") { ProfileScreen(navController) }
                         composable("patientDetails/{patientName}") { backStackEntry ->
                             val patientName = backStackEntry.arguments?.getString("patientName")
                             val patient = getPatientByName(patientName ?: "")
@@ -39,11 +47,31 @@ class MainActivity : ComponentActivity() {
                                 // Handle the case where the patient is not found
                             }
                         }
-                         }
+
+                        composable("recordDetails/{recordTitle}") { backStackEntry ->
+                            val recordTitle = backStackEntry.arguments?.getString("recordTitle")
+                            val record = getRecordByTitle(recordTitle ?: "")
+                            if (record != null) {
+                                MedicalRecord(record, navController)
+                            } else {
+                                // Handle the case where the record is not found
+                            }
+                        }
+                        composable("UpdateMedicalRecord/{recordId}") { backStackEntry ->
+                            val recordTitle = backStackEntry.arguments?.getString("recordTitle")
+                            val record = getRecordByTitle(recordTitle ?: "")
+                            if (record != null) {
+                                UpdateMedicalRecord(record)
+                            } else {
+                                // Handle the case where the record is not found
+                            }
+                        }
+                    }
                 }
             }
         }
     }
+
     fun getPatientByName(name: String): PatientModel? {
         val patients = listOf(
             PatientModel("Patient 1", "Margret Cole", "Diagnosis 1"),
@@ -52,4 +80,33 @@ class MainActivity : ComponentActivity() {
         )
         return patients.find { it.name == name }
     }
+
+    fun getRecordByTitle(title: String): RecordModel? {
+        val records = listOf(
+            RecordModel(1, "Record 1", "2023-01-01"),
+            RecordModel(2, "Record 2", "2023-02-15"),
+            RecordModel(3, "Record 3", "2023-03-20"),
+            // Add more records as needed
+        )
+        return records.find { it.title == title }
+    }
 }
+
+    fun getPatientByName(name: String): PatientModel? {
+        val patients = listOf(
+            PatientModel("Patient 1", "Margret Cole", "Diagnosis 1"),
+            PatientModel("Patient 2", "Ben Martin", "Diagnosis 2"),
+            PatientModel("Patient 3", "Bridget Kenna", "Diagnosis 3"),
+        )
+        return patients.find { it.name == name }
+    }
+
+    fun getRecordByTitle(title: String): RecordModel? {
+        val records = listOf(
+            RecordModel(1, "Record 1", "2023-01-01"),
+            RecordModel(2, "Record 2", "2023-02-15"),
+            RecordModel(3, "Record 3", "2023-03-20"),
+            // Add more records as needed
+        )
+        return records.find { it.title == title }
+    }

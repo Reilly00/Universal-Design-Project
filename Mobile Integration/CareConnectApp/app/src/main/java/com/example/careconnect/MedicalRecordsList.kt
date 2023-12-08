@@ -36,7 +36,7 @@ fun MedicalRecordsList(navController: NavController) {
             }
         }
 
-        BottomNavigationBar()
+        navController?.let { BottomNavigationBar(it) }
     }
 }
 
@@ -49,7 +49,7 @@ fun RecordListItem(record: RecordModel, navController: NavController) {
             .padding(bottom = 8.dp),
         shape = MaterialTheme.shapes.medium,
         onClick = {
-            navController.navigate("MedicalRecord/${record.title}") // Navigate to MedicalRecord Screen
+            navController.navigate("recordDetails/${record.title}")
         }
     ) {
         Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {

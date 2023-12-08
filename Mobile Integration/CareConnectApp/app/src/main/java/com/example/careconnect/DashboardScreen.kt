@@ -53,7 +53,7 @@ fun DashboardScreen(navController: NavController? = null) {
         }
 
 
-        BottomNavigationBar()
+        navController?.let { BottomNavigationBar(it) }
     }
 }
 
@@ -82,6 +82,21 @@ fun DashboardItem(item: DashboardItemModel, navController: NavController?) {
                     navController?.navigate("patientsList")
                 }
 
+                if (item.title == "Carer's Portal") {
+                    navController?.navigate("carersPortal")
+                }
+
+                if (item.title == "Scan Details") {
+                    navController?.navigate("scanDetails")
+                }
+
+                if (item.title == "Email") {
+                    navController?.navigate("emailScreen")
+                }
+
+                if (item.title == "View Records") {
+                    navController?.navigate("viewRecords")
+                }
             },
         shape = MaterialTheme.shapes.medium,
 
@@ -95,6 +110,21 @@ fun DashboardItem(item: DashboardItemModel, navController: NavController?) {
                         navController?.navigate("patientsList")
                     }
 
+                    if (item.title == "Carer's Portal") {
+                        navController?.navigate("carersPortal")
+                    }
+
+                    if (item.title == "Scan Details") {
+                        navController?.navigate("scanDetails")
+                    }
+
+                    if (item.title == "Email") {
+                        navController?.navigate("emailScreen")
+                    }
+
+                    if (item.title == "View Records") {
+                        navController?.navigate("viewRecords")
+                    }
                 },
         ) {
             Column(

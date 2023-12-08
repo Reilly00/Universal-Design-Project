@@ -22,8 +22,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+
+import androidx.navigation.NavController
+
 @Composable
-fun BottomNavigationBar() {
+fun BottomNavigationBar(navController: NavController) {
     val navItems = listOf(
         BottomNavItem("Home", Icons.Default.Home),
         BottomNavItem("Settings", Icons.Default.Settings),
@@ -49,15 +52,31 @@ fun BottomNavigationBar() {
         ) {
             val navBackStackEntry by rememberUpdatedState(LocalContext.current)
 
-            navItems.forEach { navItem ->
+            navItems.forEachIndexed { index, navItem ->
                 IconButton(
                     onClick = {
+
                         // Handle navigation to the corresponding screen
+                        if (index == 0) {
+                            navController.navigate("dashboard")
+                        }
+
+                        if (index == 1) {
+                            navController.navigate("settings")
+                        }
+
+                        if (index == 2) {
+                            navController.navigate("notifications")
+                        }
+
+                        if (index == 3) {
+                            navController.navigate("profile")
+                        }
                     },
                     modifier = Modifier
                         .background(
                             //color = Color.Magenta,
-                           color= customBackgroundColor,
+                            color= customBackgroundColor,
                             shape = CircleShape
                         )
                 ) {

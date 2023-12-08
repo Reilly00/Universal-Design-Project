@@ -23,13 +23,13 @@ import androidx.navigation.NavController
 import com.example.careconnect.ui.theme.CareConnectTheme
 
 @Composable
-fun NotificationsScreen() {
+fun NotificationsScreen(navController: NavController) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
         NotificationsContent()
-        BottomNavigationBar()
+        navController?.let { BottomNavigationBar(it) }
     }
 }
 

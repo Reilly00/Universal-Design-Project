@@ -38,11 +38,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.TopAppBar
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.careconnect.BottomNavigationBar
 import com.example.careconnect.ui.theme.CareConnectTheme
 
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(navController: NavController? = null) {
     // Sample user details
     val userDetails = listOf(
         UserDetailModel("Name", "Mary Mc Donald"),
@@ -68,7 +69,7 @@ fun ProfileScreen() {
         }
 
         // Bottom navigation bar at the end of the Column
-        BottomNavigationBar()
+        navController?.let { BottomNavigationBar(it) }
     }
 }
 
