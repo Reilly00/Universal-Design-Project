@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.example.careconnect
 
 import android.os.Bundle
@@ -12,6 +14,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.KeyboardOptions.Companion.Default
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -30,21 +33,34 @@ import androidx.navigation.NavController
 import com.example.careconnect.ui.theme.CareConnectTheme
 import androidx.compose.material.icons.filled.Send
 
+
+
 data class MessageModel(val sender: String, val content: String)
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CarersPortal(navController: NavController? = null) {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+           // .padding(top = LocalDensity.current.systemBars.top.dp)
     ) {
-        MessagingContent()
-        navController?.let { BottomNavigationBar(it) }
+        // TopAppBar
+        TopAppBar(
+            title = { Text("Care's Portal") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
+        )
+
+        // Content
+        MessagingContent(navController = navController)
     }
 }
 
 @Composable
-fun MessagingContent() {
+fun MessagingContent(navController: NavController? = null) {
     var message by remember { mutableStateOf("") }
     var messages by remember { mutableStateOf(listOf<MessageModel>()) }
 
@@ -56,12 +72,27 @@ fun MessagingContent() {
         // Display messages
         MessageList(messages = messages)
 
+        // Spacer to push the input box down
+        Spacer(modifier = Modifier.weight(1f))
+
+        // Back arrow button
+        IconButton(
+            onClick = { navController?.popBackStack() },
+            modifier = Modifier
+                .align(Alignment.End)
+                .padding(16.dp)
+        ) {
+            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
+        }
+
         // Input for typing messages
         MessageInput(onSendMessage = { sender, newMessage ->
             messages = messages + MessageModel(sender, newMessage)
         })
     }
 }
+
+
 @Composable
 fun MessageList(messages: List<MessageModel>) {
     LazyColumn {
@@ -86,19 +117,15 @@ fun MessageList(messages: List<MessageModel>) {
                     )
                 }
 
-                // Sender and timestamp outside the box
+                // Sender name outside the box, aligned to the right
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 8.dp, start = 16.dp, end = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.End
                 ) {
                     Text(
                         text = message.sender,
-                        color = Color.Gray,
-                    )
-                    Text(
-                        text = "Timestamp", // Replace with actual timestamp logic
                         color = Color.Gray,
                     )
                 }
@@ -106,8 +133,6 @@ fun MessageList(messages: List<MessageModel>) {
         }
     }
 }
-
-
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
