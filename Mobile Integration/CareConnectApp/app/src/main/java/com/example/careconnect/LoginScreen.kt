@@ -27,7 +27,7 @@ fun LoginScreen(navController: NavController? = null) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    val lightPinkColor = Color(0xFFF1E0E6)
+    val lightPinkColor = Color(0xFFF5F1F2)
     val strongerPinkColor = Color(0xFF947B83)
 
     Column(
