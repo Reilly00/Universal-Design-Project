@@ -32,32 +32,69 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.careconnect.ui.theme.CareConnectTheme
 import androidx.compose.material.icons.filled.Send
-
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 
 
 data class MessageModel(val sender: String, val content: String)
-
+val lightPinkColor = Color(0xFFF5F1F2)
+val strongerPinkColor = Color(0xFF947B83)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CarersPortal(navController: NavController? = null) {
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-           // .padding(top = LocalDensity.current.systemBars.top.dp)
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(lightPinkColor, strongerPinkColor),
+                    startY = -1.5f,
+                    endY = 2800f
+                )
+            )
     ) {
         // TopAppBar
         TopAppBar(
-            title = { Text("Care's Portal") },
+            title = {
+                Text(
+                    text = "Care's Portal",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.End)
+                        .background(color = Color.Transparent),
+                    color = Color.Black,
+                    style = MaterialTheme.typography.titleLarge
+                        .copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),
+                    //textAlign = TextAlign.Start,
+                )
+            },
+            navigationIcon = {
+                IconButton(
+                    onClick = {
+                        navController?.popBackStack()
+                    },
+                    modifier = Modifier
+                        .background(color = Color.Transparent)
+                ) {
+                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.Black)
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 8.dp)
         )
+
 
         // Content
         MessagingContent(navController = navController)
     }
 }
+
+
 
 @Composable
 fun MessagingContent(navController: NavController? = null) {
@@ -74,16 +111,6 @@ fun MessagingContent(navController: NavController? = null) {
 
         // Spacer to push the input box down
         Spacer(modifier = Modifier.weight(1f))
-
-        // Back arrow button
-        IconButton(
-            onClick = { navController?.popBackStack() },
-            modifier = Modifier
-                .align(Alignment.End)
-                .padding(16.dp)
-        ) {
-            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
-        }
 
         // Input for typing messages
         MessageInput(onSendMessage = { sender, newMessage ->
@@ -108,7 +135,7 @@ fun MessageList(messages: List<MessageModel>) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)
-                        .background(color = Color(0xFFF1E0E6), shape = MaterialTheme.shapes.medium)
+                        .background(color = Color(0xFFE6C5D0), shape = MaterialTheme.shapes.medium)
                         .padding(16.dp)
                 ) {
                     Text(
@@ -126,7 +153,7 @@ fun MessageList(messages: List<MessageModel>) {
                 ) {
                     Text(
                         text = message.sender,
-                        color = Color.Gray,
+                        color = Color.DarkGray,
                     )
                 }
             }
