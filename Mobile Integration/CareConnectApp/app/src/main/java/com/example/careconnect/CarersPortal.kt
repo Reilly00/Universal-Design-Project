@@ -36,7 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-
+import androidx.compose.runtime.Composable
 
 data class MessageModel(val sender: String, val content: String)
 val lightPinkColor = Color(0xFFF5F1F2)
@@ -62,7 +62,7 @@ fun CarersPortal(navController: NavController? = null) {
         TopAppBar(
             title = {
                 Text(
-                    text = "Care's Portal",
+                    text = "  Care's Connect Portal",
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.End)
