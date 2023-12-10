@@ -21,6 +21,10 @@ object RetrofitClient {
 interface ApiService {
     @POST("/register")
     suspend fun registerUser(@Body registrationData: RegistrationData): Response<Unit>
+
+    @POST("/login")
+    suspend fun loginUser(@Body loginData: LoginData): Response<Unit>
 }
 
 data class RegistrationData(val username: String, val email: String, val password: String)
+data class LoginData(val username: String, val password: String)
