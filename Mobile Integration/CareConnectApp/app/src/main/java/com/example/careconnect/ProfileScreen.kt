@@ -42,6 +42,8 @@ import androidx.navigation.NavController
 import com.example.careconnect.BottomNavigationBar
 import com.example.careconnect.ui.theme.CareConnectTheme
 
+
+
 @Composable
 fun ProfileScreen(navController: NavController? = null) {
     // Sample user details
@@ -56,6 +58,26 @@ fun ProfileScreen(navController: NavController? = null) {
     Column(
         modifier = Modifier.padding(16.dp)
     ) {
+        // Arrow back button
+        Box(
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(start = 16.dp)
+        ) {
+            IconButton(
+                onClick = {
+                    navController?.popBackStack()
+                },
+                modifier = Modifier
+                    .background(
+                        color = Color(0xFFBB99A5),
+                        shape = CircleShape
+                    )
+            ) {
+                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.Black)
+            }
+        }
+
         // Header with profile picture
         ProfileHeader()
 
@@ -67,7 +89,7 @@ fun ProfileScreen(navController: NavController? = null) {
         }
 
         // Bottom navigation bar at the end of the Column
-       // navController?.let { BottomNavigationBar(it) }
+        // navController?.let { BottomNavigationBar(it) }
     }
 }
 
@@ -99,6 +121,14 @@ fun ProfileHeader() {
     }
 }
 
+@Composable
+fun UserDetailsList(userDetails: List<UserDetailModel>) {
+    LazyColumn {
+        items(userDetails) { detail ->
+            UserDetailItem(detail)
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -106,13 +136,13 @@ fun UserDetailItem(detail: UserDetailModel) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 8.dp),
-        shape = MaterialTheme.shapes.medium,
+            .padding(bottom = 8.dp)
+            //.background(color = Color(0xFFE6C5D0), shape = MaterialTheme.shapes.medium)
+            .padding(16.dp),
         onClick = { /* Handle item click here */ }
     ) {
         Column(
             modifier = Modifier
-                .padding(16.dp)
                 .fillMaxWidth()
         ) {
             Text(
@@ -130,6 +160,7 @@ fun UserDetailItem(detail: UserDetailModel) {
         }
     }
 }
+
 
 data class UserDetailModel(val title: String, val subtitle: String)
 
