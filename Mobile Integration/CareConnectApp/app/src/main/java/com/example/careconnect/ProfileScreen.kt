@@ -79,7 +79,7 @@ fun ProfileScreen(navController: NavController? = null) {
                         shape = CircleShape
                     )
             ) {
-                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.Black)
+                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
             }
         }
 
