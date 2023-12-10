@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,7 +14,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+
 
 @Composable
 fun MedicalRecordsList(navController: NavController) {
@@ -52,7 +50,7 @@ fun MedicalRecordsList(navController: NavController) {
                 text = "Medical Records",
                 style = MaterialTheme.typography.titleLarge
                     .copy(fontWeight = FontWeight.Bold, fontSize = 22.sp),
-                color = Color.Black,
+                color = Color(0xFF00008B),  // Specify color here
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 80.dp)
@@ -70,6 +68,7 @@ fun MedicalRecordsList(navController: NavController) {
         navController?.let { BottomNavigationBar(it) }
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,7 +93,6 @@ fun RecordListItem(record: RecordModel, navController: NavController) {
         ) {
             Text(
                 record.title,
-                //color = MaterialTheme.colorScheme.secondary,
                 color = Color(0xFF00008B),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(bottom = 8.dp)

@@ -50,7 +50,7 @@ fun PatientDetailsScreen(patient: PatientModel, navController: NavController? = 
                 text = "Patient Details",
                 style = MaterialTheme.typography.titleLarge
                     .copy(fontWeight = FontWeight.Bold, fontSize = 22.sp),
-                color = Color.Black,
+                color = Color(0xFF00008B),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 100.dp)
@@ -74,8 +74,9 @@ fun PatientDetailsScreen(patient: PatientModel, navController: NavController? = 
             modifier = Modifier.padding(bottom = 8.dp, start = 20.dp)
         )
 
-        // Bottom navigation bar at the end of the Column
+
         navController?.let { BottomNavigationBar(it) }
     }
 }
+
 

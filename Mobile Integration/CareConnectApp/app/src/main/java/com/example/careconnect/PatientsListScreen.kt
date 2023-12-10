@@ -40,7 +40,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
 
-
 @Composable
 fun PatientsListScreen(navController: NavController? = null) {
     val lightPinkColor = Color(0xFFF5F1F2)
@@ -89,7 +88,7 @@ fun PatientsListScreen(navController: NavController? = null) {
                 text = "Patients",
                 style = MaterialTheme.typography.titleLarge
                     .copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),
-                color = Color.Black,
+                color = Color(0xFF00008B),  // Specify color here
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 130.dp)
@@ -108,6 +107,7 @@ fun PatientsListScreen(navController: NavController? = null) {
         }
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

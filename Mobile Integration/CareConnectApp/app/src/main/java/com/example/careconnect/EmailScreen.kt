@@ -50,6 +50,7 @@ fun EmailScreen(navController: NavController? = null) {
 
         Text(
             text = "Email",
+            color = Color(0xFF00008B),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 35.dp),
