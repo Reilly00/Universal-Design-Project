@@ -2,13 +2,22 @@ package com.example.careconnect
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -20,7 +29,6 @@ import androidx.navigation.NavController
 
 @Composable
 fun MedicalRecord(record: RecordModel, navController: NavController) {
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -33,16 +41,37 @@ fun MedicalRecord(record: RecordModel, navController: NavController) {
             )
             .padding(16.dp)
     ) {
-        Text(
-            text = "Medical Record Details",
-            style = MaterialTheme.typography.titleLarge
-                .copy(fontWeight = FontWeight.Bold, fontSize = 22.sp),
-            color = Color(0xFF00008B),
-            textAlign = TextAlign.Center,
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 65.dp)
-        )
+                .padding(2.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(
+                onClick = {
+                    navController.popBackStack()
+                },
+                modifier = Modifier
+                    .background(
+                        color = Color(0xFFBB99A5),
+                        shape = CircleShape
+                    )
+            ) {
+                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+            }
+            Text(
+                text = "Medical Record Details",
+                style = MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold, fontSize = 22.sp),
+                color = Color(0xFF00008B),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 0.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Text(
             text = "Title: ${record.title}",
@@ -58,7 +87,6 @@ fun MedicalRecord(record: RecordModel, navController: NavController) {
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
-
         Button(
             onClick = {
                 navController.navigate("UpdateMedicalRecord/${record.id}")
@@ -67,10 +95,11 @@ fun MedicalRecord(record: RecordModel, navController: NavController) {
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.primary)
                 .padding(top = 16.dp)
+
         ) {
             Text("Update Record")
-        }
 
+        }
 
         navController?.let { BottomNavigationBar(it) }
     }
