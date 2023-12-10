@@ -49,19 +49,17 @@ fun ProfileScreen(navController: NavController? = null) {
         UserDetailModel("Name", "Mary Mc Donald"),
         UserDetailModel("Email", "mcdonald.mary@gmail.com"),
         UserDetailModel("Phone", "+353 085 123 4567"),
+        UserDetailModel("Location", "Dublin, Ireland"),
+        UserDetailModel("Date of Birth", "January 15, 1990"),
+        UserDetailModel("Bio", "Passionate about technology and healthcare."),
     )
-
-    // profile screen content goes here
     Column(
         modifier = Modifier.padding(16.dp)
     ) {
-        Text(
-            text = "User Profile",
-            style = MaterialTheme.typography.titleLarge,
-            color = Color.Black,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+        // Header with profile picture
+        ProfileHeader()
 
+        // User details
         LazyColumn {
             items(userDetails) { detail ->
                 UserDetailItem(detail)
@@ -69,9 +67,38 @@ fun ProfileScreen(navController: NavController? = null) {
         }
 
         // Bottom navigation bar at the end of the Column
-        navController?.let { BottomNavigationBar(it) }
+       // navController?.let { BottomNavigationBar(it) }
     }
 }
+
+
+@Composable
+fun ProfileHeader() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(id = android.R.drawable.ic_menu_gallery),
+            contentDescription = null,
+            modifier = Modifier
+                .size(120.dp)
+                .clip(CircleShape)
+        )
+        // Spacer for separation
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // User Profile title
+        Text(
+            text = "User Profile",
+            style = MaterialTheme.typography.titleLarge,
+            color = Color.Black,
+        )
+    }
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
