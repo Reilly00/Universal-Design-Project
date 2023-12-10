@@ -1,5 +1,10 @@
 package com.example.careconnect
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -7,7 +12,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -20,15 +28,17 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 
 
 
@@ -101,10 +111,23 @@ fun PatientsListScreen(navController: NavController? = null) {
 }
 
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PatientListItem(patient: PatientModel, navController: NavController) {
+
+    val starAlpha = remember { Animatable(0f) }
+
+
+    LaunchedEffect(starAlpha) {
+        starAlpha.animateTo(
+            targetValue = 1f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(durationMillis = 500),
+                repeatMode = RepeatMode.Reverse
+            )
+        )
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -114,30 +137,38 @@ fun PatientListItem(patient: PatientModel, navController: NavController) {
             navController.navigate("patientDetails/${patient.name}")
         }
     ) {
-        Column(modifier = Modifier.fillMaxWidth()
-            .background(color = Color(0xFFBB99A5), shape = MaterialTheme.shapes.medium)
-            .padding(2.dp))
-        {
+        Column(
+            modifier = Modifier.fillMaxWidth()
+                .background(color = Color(0xFFBB99A5), shape = MaterialTheme.shapes.medium)
+                .padding(2.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.heart),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(60.dp)
+                    .offset(x = 280.dp, y = 70.dp)
+                    .alpha(starAlpha.value)
+            )
+            Spacer(modifier = Modifier.width(16.dp))
             Text(
                 text = patient.number,
                 color = Color(0xFF00008B),
-                //color = MaterialTheme.colorScheme.secondary,
                 style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 8.dp)
-                    .padding(start = 16.dp),
+                modifier = Modifier.padding(bottom = 8.dp).padding(start = 16.dp),
             )
             Text(
                 text = patient.name,
                 style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(bottom = 8.dp)
-                    .padding(start = 16.dp),
+                modifier = Modifier.padding(bottom = 8.dp).padding(start = 16.dp),
             )
             Text(
                 text = patient.diagnosis,
                 style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 8.dp)
-                    .padding(start = 16.dp),
+                modifier = Modifier.padding(bottom = 8.dp).padding(start = 16.dp),
             )
+
+
         }
     }
 }
