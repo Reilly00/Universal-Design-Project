@@ -94,7 +94,8 @@ fun RecordListItem(record: RecordModel, navController: NavController) {
         ) {
             Text(
                 record.title,
-                color = MaterialTheme.colorScheme.secondary,
+                //color = MaterialTheme.colorScheme.secondary,
+                color = Color(0xFF00008B),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
