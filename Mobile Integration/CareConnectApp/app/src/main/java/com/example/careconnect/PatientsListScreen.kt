@@ -30,6 +30,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 
+
+
 @Composable
 fun PatientsListScreen(navController: NavController? = null) {
     val lightPinkColor = Color(0xFFF5F1F2)
@@ -74,14 +76,30 @@ fun PatientsListScreen(navController: NavController? = null) {
             ) {
                 Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
             }
+            Text(
+                text = "Patients",
+                style = MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),
+                color = Color.Black,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 130.dp)
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         // Content
-        PatientListItem()
+        LazyColumn {
+            items(patients) { patient ->
+                if (navController != null) {
+                    PatientListItem(patient, navController)
+                }
+            }
+        }
     }
 }
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)

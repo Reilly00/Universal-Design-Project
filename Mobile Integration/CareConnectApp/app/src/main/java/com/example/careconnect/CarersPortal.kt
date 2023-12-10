@@ -177,7 +177,7 @@ fun MessageInput(onSendMessage: (String, String) -> Unit) {
             value = message,
             onValueChange = { message = it },
             modifier = Modifier
-                .weight(1f)
+                //.weight(1f)
                 .padding(end = 8.dp),
 
             placeholder = { Text("Type a message...") },
