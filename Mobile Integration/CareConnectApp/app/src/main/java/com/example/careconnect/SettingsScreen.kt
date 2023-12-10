@@ -66,28 +66,26 @@ fun SettingsScreen(navController: NavController? = null) {
                     startY = -1.5f,
                     endY = 2800f
                 )
-            )
+            ),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Overlay the "Settings" text on top of the Row
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 40.dp)
-                .align(Alignment.CenterHorizontally)
-        ) {
-            Text(
-                text = "Settings",
-                style = MaterialTheme.typography.titleLarge
-                    .copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),
-                color = Color.Black
-            )
-        }
+        Text(
+            text = "Settings",
+            style = MaterialTheme.typography.titleLarge
+                .copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),
+            color = Color.Black,
+            modifier = Modifier.padding(bottom = 22.dp)
+        )
 
         // Content
         SettingsContent()
         navController?.let { BottomNavigationBar(it) }
     }
 }
+
+
 
 @Composable
 fun SettingsContent() {
@@ -127,13 +125,6 @@ fun SettingsContent() {
                 onClick = { /* Handle click for help and support */ }
             )
         }
-        item {
-            SettingsItem(
-                title = "Notifications",
-                icon = Icons.Default.Notifications,
-                onClick = { /* Handle click for additional setting */ }
-            )
-        }
 
     }
 }
@@ -145,26 +136,33 @@ fun SettingsItem(title: String, icon: ImageVector, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 8.dp),
-        shape = MaterialTheme.shapes.medium,
+            .padding(bottom = 10.dp, start = 16.dp, end = 16.dp),
+       // shape = MaterialTheme.shapes.medium,
         onClick = onClick
     ) {
-        Row(
+        Column(
             modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment1.CenterVertically
+                .fillMaxWidth()
+                .background(color = Color(0xFFBB99A5), shape = MaterialTheme.shapes.medium)
+                .padding(5.dp)
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier.size(32.dp)
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleSmall,
-            )
+            Row(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment1.CenterVertically
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp)
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+            }
         }
     }
 }
