@@ -1,5 +1,6 @@
 package com.example.careconnect
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,11 +26,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
+
 @Composable
 fun PatientDetailsScreen(patient: PatientModel, navController: NavController? = null) {
     val lightPinkColor = Color(0xFFF5F1F2)
     val strongerPinkColor = Color(0xFF947B83)
 
+    Log.d("PatientDetailsScreen", "NavController: $navController")
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -49,6 +52,7 @@ fun PatientDetailsScreen(patient: PatientModel, navController: NavController? = 
         ) {
             IconButton(
                 onClick = {
+                    Log.d("PatientDetailsScreen", "Back button clicked")
                     navController?.popBackStack()
                 },
                 modifier = Modifier
@@ -87,8 +91,9 @@ fun PatientDetailsScreen(patient: PatientModel, navController: NavController? = 
             modifier = Modifier.padding(bottom = 8.dp, start = 20.dp)
         )
 
-        navController?.let { BottomNavigationBar(it) }
+       // navController?.let { BottomNavigationBar(it) }
     }
+
 }
 
 

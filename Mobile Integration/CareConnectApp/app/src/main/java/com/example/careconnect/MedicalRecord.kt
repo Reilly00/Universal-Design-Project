@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -77,7 +78,7 @@ fun MedicalRecord(record: RecordModel, navController: NavController) {
             text = "Title: ${record.title}",
             style = MaterialTheme.typography.titleLarge,
             color = Color.Black,
-            modifier = Modifier.padding(bottom = 8.dp)
+            modifier = Modifier.padding(top = 25.dp, bottom = 8.dp)
         )
 
         Text(
@@ -93,12 +94,13 @@ fun MedicalRecord(record: RecordModel, navController: NavController) {
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.primary)
-                .padding(top = 16.dp)
-
+                //.background(MaterialTheme.colorScheme.primary)
+                .padding(top = 8.dp, bottom = 8.dp)
+                .height(60.dp)
+                .padding(horizontal = 16.dp)
+                .clip(CircleShape)
         ) {
             Text("Update Record")
-
         }
 
         navController?.let { BottomNavigationBar(it) }
