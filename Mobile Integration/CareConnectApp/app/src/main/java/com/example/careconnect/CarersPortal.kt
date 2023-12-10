@@ -85,10 +85,8 @@ fun CarersPortal(navController: NavController? = null) {
         MessagingContent(navController = navController)
     }
 }
-
 @Composable
 fun MessagingContent(navController: NavController? = null) {
-    var message by remember { mutableStateOf("") }
     var messages by remember { mutableStateOf(listOf(
         MessageModel("Doctor Smith", "We assessed the patient today."),
         MessageModel("Nurse Johnson", "Patient's vitals are stable."),
@@ -147,7 +145,7 @@ fun MessagingContent(navController: NavController? = null) {
             }
         }
 
-
+        // Message input
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -155,15 +153,14 @@ fun MessagingContent(navController: NavController? = null) {
         ) {
             Spacer(modifier = Modifier.weight(1f))
             MessageInput(onSendMessage = { sender, newMessage ->
-                messages = listOf(MessageModel(sender, newMessage)) + messages
+                // Add the new message at the end of the list
+                messages = messages + MessageModel(sender, newMessage)
             })
         }
     }
 }
 
-
-
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun MessageInput(onSendMessage: (String, String) -> Unit) {
     var sender by remember { mutableStateOf("John Doe") }
@@ -189,7 +186,6 @@ fun MessageInput(onSendMessage: (String, String) -> Unit) {
                 color = MaterialTheme.colorScheme.onBackground
             ),
             colors = TextFieldDefaults.textFieldColors(
-                //backgroundColor = Color.Transparent,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent
             ),
