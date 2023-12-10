@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -59,7 +60,6 @@ fun SettingsScreen(navController: NavController? = null) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 16.dp)
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(lightPinkColor, strongerPinkColor),
@@ -70,6 +70,8 @@ fun SettingsScreen(navController: NavController? = null) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(modifier = Modifier.height(16.dp))
+
         // Overlay the "Settings" text on top of the Row
         Text(
             text = "Settings",
@@ -84,6 +86,7 @@ fun SettingsScreen(navController: NavController? = null) {
         navController?.let { BottomNavigationBar(it) }
     }
 }
+
 
 
 

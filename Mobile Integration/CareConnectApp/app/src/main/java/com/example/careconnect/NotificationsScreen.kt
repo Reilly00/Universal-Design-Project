@@ -6,8 +6,10 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -35,17 +37,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.careconnect.ui.theme.CareConnectTheme
-
 @Composable
 fun NotificationsScreen(navController: NavController? = null) {
-
     val lightPinkColor = Color(0xFFF5F1F2)
     val strongerPinkColor = Color(0xFF947B83)
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 16.dp)
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(lightPinkColor, strongerPinkColor),
@@ -54,6 +53,8 @@ fun NotificationsScreen(navController: NavController? = null) {
                 )
             )
     ) {
+        Spacer(modifier = Modifier.height(16.dp))
+
         Text(
             text = "Notifications",
             modifier = Modifier
@@ -69,6 +70,7 @@ fun NotificationsScreen(navController: NavController? = null) {
         navController?.let { BottomNavigationBar(it) }
     }
 }
+
 
 @Composable
 fun NotificationsContent() {

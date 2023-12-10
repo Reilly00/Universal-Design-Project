@@ -45,7 +45,6 @@ import com.example.careconnect.BottomNavigationBar
 import com.example.careconnect.ui.theme.CareConnectTheme
 import com.example.careconnect.R
 
-
 @Composable
 fun ProfileScreen(navController: NavController? = null) {
     val lightPinkColor = Color(0xFFF5F1F2)
@@ -54,7 +53,6 @@ fun ProfileScreen(navController: NavController? = null) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 16.dp)
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(lightPinkColor, strongerPinkColor),
@@ -63,6 +61,7 @@ fun ProfileScreen(navController: NavController? = null) {
                 )
             )
     ) {
+        Spacer(modifier = Modifier.height(16.dp))
 
         Box(
             modifier = Modifier
@@ -87,6 +86,7 @@ fun ProfileScreen(navController: NavController? = null) {
         ProfileContent()
     }
 }
+
 
 data class UserDetailModel(val title: String, val subtitle: String)
 @Composable
