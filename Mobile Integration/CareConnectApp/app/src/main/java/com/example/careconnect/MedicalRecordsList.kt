@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -16,7 +17,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun MedicalRecordsList(navController: NavController) {
@@ -38,24 +38,34 @@ fun MedicalRecordsList(navController: NavController) {
                     endY = 2800f
                 )
             )
+            .padding(16.dp)
     ) {
-        Box(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
-                .background(
-                    color = Color.Transparent,
-                    shape = CircleShape
-                )
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            IconButton(
+                onClick = {
+                    navController.popBackStack()
+                },
+                modifier = Modifier
+                    .background(
+                        color = Color(0xFFBB99A5),
+                        shape = CircleShape
+                    )
+            ) {
+                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+            }
             Text(
                 text = "Medical Records",
                 style = MaterialTheme.typography.titleLarge
                     .copy(fontWeight = FontWeight.Bold, fontSize = 22.sp),
-                color = Color.Black,
+                color = Color(0xFF00008B),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 80.dp)
+                    .padding(start = 29.dp)
             )
         }
 
@@ -70,6 +80,8 @@ fun MedicalRecordsList(navController: NavController) {
         navController?.let { BottomNavigationBar(it) }
     }
 }
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,7 +106,6 @@ fun RecordListItem(record: RecordModel, navController: NavController) {
         ) {
             Text(
                 record.title,
-                //color = MaterialTheme.colorScheme.secondary,
                 color = Color(0xFF00008B),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(bottom = 8.dp)

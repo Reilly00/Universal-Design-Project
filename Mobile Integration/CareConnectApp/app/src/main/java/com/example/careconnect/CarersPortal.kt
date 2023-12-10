@@ -2,18 +2,12 @@
 
 package com.example.careconnect
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.KeyboardOptions.Companion.Default
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -23,22 +17,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.SemanticsProperties.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import com.example.careconnect.ui.theme.CareConnectTheme
-import androidx.compose.material.icons.filled.Send
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.runtime.Composable
+import androidx.navigation.NavController
 
 data class MessageModel(val sender: String, val content: String)
 
@@ -60,22 +45,42 @@ fun CarersPortal(navController: NavController? = null) {
             )
             .padding(16.dp)
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Care's Portal",
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 35.dp),
-            style = MaterialTheme.typography.titleLarge
-                .copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),
-            textAlign = TextAlign.Center
-        )
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(
+                onClick = {
+                    navController?.popBackStack()
+                },
+                modifier = Modifier
+                    .background(
+                        color = Color(0xFFBB99A5),
+                        shape = CircleShape
+                    )
+            ) {
+                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+            }
+            Text(
+                text = "Care's Portal",
+                color = Color(0xFF00008B),
+                style = MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 60.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         // Content
         MessagingContent(navController = navController)
     }
 }
+
 
 
 @Composable
