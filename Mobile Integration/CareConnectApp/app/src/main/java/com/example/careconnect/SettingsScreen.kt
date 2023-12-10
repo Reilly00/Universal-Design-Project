@@ -20,6 +20,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
@@ -32,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -43,6 +47,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.careconnect.ui.theme.CareConnectTheme
+import com.google.rpc.Help
+import androidx.compose.ui.Alignment.Companion as Alignment1
 
 
 @Composable
@@ -62,44 +68,26 @@ fun SettingsScreen(navController: NavController? = null) {
                 )
             )
     ) {
-        Row(
+        // Overlay the "Settings" text on top of the Row
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+                .padding(horizontal = 40.dp)
+                .align(Alignment.CenterHorizontally)
         ) {
-            IconButton(
-                onClick = {
-                    navController?.popBackStack()
-                },
-                modifier = Modifier
-                    .background(
-                        color = Color(0xFFBB99A5),
-                        shape = CircleShape
-                    )
-            ) {
-                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
-            }
-
             Text(
                 text = "Settings",
                 style = MaterialTheme.typography.titleLarge
                     .copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),
-                //textAlign = TextAlign.Center,
                 color = Color.Black
             )
-
         }
 
         // Content
         SettingsContent()
-       // navController?.let { BottomNavigationBar(it) }
+        navController?.let { BottomNavigationBar(it) }
     }
 }
-
-
-
 
 @Composable
 fun SettingsContent() {
@@ -118,8 +106,38 @@ fun SettingsContent() {
                 onClick = { /* Handle click for app settings */ }
             )
         }
+        item {
+            SettingsItem(
+                title = "Notifications",
+                icon = Icons.Default.Notifications,
+                onClick = { /* Handle click for notification settings */ }
+            )
+        }
+        item {
+            SettingsItem(
+                title = "Privacy",
+                icon = Icons.Default.Lock,
+                onClick = { /* Handle click for privacy settings */ }
+            )
+        }
+        item {
+            SettingsItem(
+                title = "Help & Support",
+                icon = Icons.Default.Build,
+                onClick = { /* Handle click for help and support */ }
+            )
+        }
+        item {
+            SettingsItem(
+                title = "Notifications",
+                icon = Icons.Default.Notifications,
+                onClick = { /* Handle click for additional setting */ }
+            )
+        }
+
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -135,7 +153,7 @@ fun SettingsItem(title: String, icon: ImageVector, onClick: () -> Unit) {
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment1.CenterVertically
         ) {
             Icon(
                 imageVector = icon,
