@@ -3,9 +3,13 @@ package com.example.careconnect
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -13,7 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -46,18 +49,36 @@ fun EmailScreen(navController: NavController? = null) {
             )
             .padding(16.dp)
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Email",
-            color = Color(0xFF00008B),
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 35.dp),
-            style = MaterialTheme.typography.titleLarge
-                .copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),
-            textAlign = TextAlign.Center
-        )
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(
+                onClick = {
+                    navController?.popBackStack()
+                },
+                modifier = Modifier
+                    .background(
+                        color = Color(0xFFBB99A5),
+                        shape = CircleShape
+                    )
+            ) {
+                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+            }
+            Text(
+                text = "Email",
+                color = Color(0xFF00008B),
+                style = MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 85.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         // Content
         EmailContent()

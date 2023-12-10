@@ -70,7 +70,7 @@ fun CarersPortal(navController: NavController? = null) {
                     .copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp)
+                    .padding(start = 60.dp)
             )
         }
 
