@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -110,13 +109,11 @@ fun PatientsListScreen(navController: NavController? = null) {
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PatientListItem(patient: PatientModel, navController: NavController) {
 
     val starAlpha = remember { Animatable(0f) }
-
 
     LaunchedEffect(starAlpha) {
         starAlpha.animateTo(
@@ -131,47 +128,52 @@ fun PatientListItem(patient: PatientModel, navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(8.dp),
         shape = MaterialTheme.shapes.medium,
         onClick = {
             navController.navigate("patientDetails/${patient.name}")
         }
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth()
-                .background(color = Color(0xFFBB99A5), shape = MaterialTheme.shapes.medium)
-                .padding(2.dp)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = Color(0xFFBB99A5), shape = MaterialTheme.shapes.medium),
         ) {
             Image(
                 painter = painterResource(id = R.drawable.heart),
                 contentDescription = null,
                 modifier = Modifier
                     .size(60.dp)
-                    .offset(x = 280.dp, y = 70.dp)
+                    .offset(280.dp, 20.dp)
                     .alpha(starAlpha.value)
             )
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(
-                text = patient.number,
-                color = Color(0xFF00008B),
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 8.dp).padding(start = 16.dp),
-            )
-            Text(
-                text = patient.name,
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(bottom = 8.dp).padding(start = 16.dp),
-            )
-            Text(
-                text = patient.diagnosis,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 8.dp).padding(start = 16.dp),
-            )
-
-
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, top = 20.dp, bottom = 20.dp)
+            ) {
+                Text(
+                    text = patient.number,
+                    color = Color(0xFF00008B),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(bottom = 4.dp),
+                )
+                Text(
+                    text = patient.name,
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(bottom = 4.dp),
+                )
+                Text(
+                    text = patient.diagnosis,
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(bottom = 4.dp),
+                )
+            }
         }
     }
 }
+
+
 
 // Data model for the patients
 data class PatientModel(val number: String, val name: String, val diagnosis: String)
