@@ -55,10 +55,11 @@ fun LoginScreen(navController: NavController? = null) {
             onClick = {
                 coroutineScope.launch {
                     val response = RetrofitClient.instance.loginUser(LoginData(username, password))
-                    loginStatus = if (response.isSuccessful) {
-                        LoginStatus.SUCCESS
+                    if (response.isSuccessful) {
+                        loginStatus = LoginStatus.SUCCESS
+                        navController?.navigate("dashboard")
                     } else {
-                        LoginStatus.ERROR
+                        loginStatus = LoginStatus.ERROR
                     }
                 }
             },
@@ -70,10 +71,7 @@ fun LoginScreen(navController: NavController? = null) {
         }
 
         when (loginStatus) {
-            LoginStatus.SUCCESS -> {
-                Text("Login successful")
-                // Optionally navigate to dashboard or another screen
-            }
+            LoginStatus.SUCCESS -> Text("Login successful")
             LoginStatus.ERROR -> Text("Login failed", color = Color.Red)
             else -> {} // Do nothing for NONE
         }
