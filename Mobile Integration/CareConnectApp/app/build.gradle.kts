@@ -88,7 +88,7 @@ dependencies {
     implementation ("com.google.zxing:core:3.4.1")
     implementation ("androidx.camera:camera-extensions:1.0.0-alpha30")
     implementation ("androidx.camera:camera-lifecycle:1.1.0")
-    implementation("com.journeyapps:zxing-android-embedded:4.2.0")
+    //implementation("com.journeyapps:zxing-android-embedded:4.2.0")
 
 
 
