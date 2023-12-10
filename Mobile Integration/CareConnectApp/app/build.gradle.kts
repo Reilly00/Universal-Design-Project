@@ -64,6 +64,9 @@ dependencies {
 
     implementation("androidx.compose.ui:ui-text-android:1.5.4")
     implementation("com.google.firebase:protolite-well-known-types:18.0.0")
+    implementation("androidx.camera:camera-core:1.3.0")
+    implementation("androidx.camera:camera-lifecycle:1.3.0")
+    implementation("androidx.camera:camera-view:1.3.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -78,5 +81,14 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07")
+
+
+    implementation ("androidx.camera:camera-camera2:1.1.0")
+    implementation ("com.google.zxing:core:3.4.1")
+    implementation ("androidx.camera:camera-extensions:1.0.0-alpha30")
+    implementation ("androidx.camera:camera-lifecycle:1.1.0")
+
+
+
 
 }
