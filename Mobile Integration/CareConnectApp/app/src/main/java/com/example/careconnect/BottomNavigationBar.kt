@@ -18,12 +18,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
 import androidx.navigation.NavController
+import kotlinx.coroutines.delay
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
@@ -52,40 +54,50 @@ fun BottomNavigationBar(navController: NavController) {
         ) {
             val navBackStackEntry by rememberUpdatedState(LocalContext.current)
 
+            var rotationState by remember { mutableStateOf(0f) }
+
+            LaunchedEffect(Unit) {
+                while (true) {
+                    delay(16) // Delay to control rotation speed
+                    rotationState += 1f
+                }
+            }
+
             navItems.forEachIndexed { index, navItem ->
                 IconButton(
                     onClick = {
-
                         // Handle navigation to the corresponding screen
-                        if (index == 0) {
-                            navController.navigate("dashboard")
-                        }
-
-                        if (index == 1) {
-                            navController.navigate("settings")
-                        }
-
-                        if (index == 2) {
-                            navController.navigate("notifications")
-                        }
-
-                        if (index == 3) {
-                            navController.navigate("profile")
+                        when (index) {
+                            0 -> navController.navigate("dashboard")
+                            1 -> navController.navigate("settings")
+                            2 -> navController.navigate("notifications")
+                            3 -> navController.navigate("profile")
                         }
                     },
                     modifier = Modifier
                         .background(
-                            //color = Color.Magenta,
-                            color= customBackgroundColor,
+                            color = customBackgroundColor,
                             shape = CircleShape
                         )
                 ) {
-                    Icon(
-                        imageVector = navItem.icon,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(36.dp)
-                    )
+                    // Apply the rotation only to the Settings icon
+                    if (index == 1) {
+                        Icon(
+                            imageVector = navItem.icon,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier
+                                .size(36.dp)
+                                .rotate(rotationState)
+                        )
+                    } else {
+                        Icon(
+                            imageVector = navItem.icon,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(36.dp)
+                        )
+                    }
                 }
             }
         }
