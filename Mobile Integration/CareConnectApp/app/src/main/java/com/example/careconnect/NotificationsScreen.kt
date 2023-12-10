@@ -117,7 +117,6 @@ fun NotificationItem(item: NotificationItemModel) {
     }
 }
 
-
 data class NotificationItemModel(val title: String, val content: String)
 
 fun getNotificationItems(): List<NotificationItemModel> {
@@ -126,11 +125,6 @@ fun getNotificationItems(): List<NotificationItemModel> {
         NotificationItemModel("Task Completed", "Task assigned to you has been completed."),
         NotificationItemModel("Appointment Confirmation", "Your appointment is confirmed."),
         NotificationItemModel("Appointment Update", "Update on your upcoming appointment."),
-
-
-
-
-
 
         )
 }
