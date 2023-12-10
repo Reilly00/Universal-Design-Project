@@ -5,7 +5,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -21,16 +24,47 @@ import com.example.careconnect.ui.theme.CareConnectTheme
 
 // https://developer.android.com/reference/kotlin/androidx/compose/ui/platform/SoftwareKeyboardController
 
+//@Composable
+//fun EmailScreen(navController: NavController? = null) {
+//    Surface(
+//        modifier = Modifier.fillMaxSize(),
+//        color = MaterialTheme.colorScheme.background
+//    ) {
+//        EmailContent()
+//        navController?.let { BottomNavigationBar(it) }
+//    }
+//}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EmailScreen(navController: NavController? = null) {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
-        EmailContent()
-        navController?.let { BottomNavigationBar(it) }
+    Column {
+        TopAppBar(
+            title = { Text("Email ") },
+            navigationIcon = {
+                IconButton(
+                    onClick = {
+                        navController?.popBackStack()
+                    },
+                    modifier = Modifier
+                        .background(
+                            color = Color(0xFFBB99A5),
+                            shape = CircleShape
+                        )
+                ) {
+                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.Black)
+                }
+            }
+        )
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            EmailContent()
+        }
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

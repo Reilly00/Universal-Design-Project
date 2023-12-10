@@ -9,6 +9,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.KeyboardOptions.Companion.Default
@@ -36,20 +38,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-
+import androidx.compose.runtime.Composable
 
 data class MessageModel(val sender: String, val content: String)
+
+
 val lightPinkColor = Color(0xFFF5F1F2)
 val strongerPinkColor = Color(0xFF947B83)
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CarersPortal(navController: NavController? = null) {
-
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(top = 16.dp)
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(lightPinkColor, strongerPinkColor),
@@ -58,110 +61,106 @@ fun CarersPortal(navController: NavController? = null) {
                 )
             )
     ) {
-        // TopAppBar
-        TopAppBar(
-            title = {
-                Text(
-                    text = "Care's Portal",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.End)
-                        .background(color = Color.Transparent),
-                    color = Color.Black,
-                    style = MaterialTheme.typography.titleLarge
-                        .copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),
-                    //textAlign = TextAlign.Start,
-                )
-            },
-            navigationIcon = {
-                IconButton(
-                    onClick = {
-                        navController?.popBackStack()
-                    },
-                    modifier = Modifier
-                        .background(color = Color.Transparent)
-                ) {
-                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.Black)
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-        )
 
+        Box(
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(start = 16.dp)
+        ) {
+            IconButton(
+                onClick = {
+                    navController?.popBackStack()
+                },
+                modifier = Modifier
+                    .background(
+                        color = Color(0xFFBB99A5),
+                        shape = CircleShape
+                    )
+            ) {
+                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.Black)
+            }
+        }
 
         // Content
         MessagingContent(navController = navController)
     }
 }
-
-
-
 @Composable
 fun MessagingContent(navController: NavController? = null) {
-    var message by remember { mutableStateOf("") }
-    var messages by remember { mutableStateOf(listOf<MessageModel>()) }
+    var messages by remember { mutableStateOf(listOf(
+        MessageModel("Doctor Smith", "We assessed the patient today."),
+        MessageModel("Nurse Johnson", "Patient's vitals are stable."),
+        MessageModel("Caregiver", "Administered medications and recorded patient's activities.")
+    )) }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
         // Display messages
-        MessageList(messages = messages)
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize(),
+        ) {
+            itemsIndexed(messages) { index, message ->
 
-        // Spacer to push the input box down
-        Spacer(modifier = Modifier.weight(1f))
-
-        // Input for typing messages
-        MessageInput(onSendMessage = { sender, newMessage ->
-            messages = messages + MessageModel(sender, newMessage)
-        })
-    }
-}
-
-
-@Composable
-fun MessageList(messages: List<MessageModel>) {
-    LazyColumn {
-        items(messages) { message ->
-            // Display each message in a designed layout
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-            ) {
-                // Message content in a light pink box
-                Box(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp)
-                        .background(color = Color(0xFFE6C5D0), shape = MaterialTheme.shapes.medium)
-                        .padding(16.dp)
+                        .padding(vertical = 8.dp)
                 ) {
-                    Text(
-                        text = message.content,
-                        color = Color.Black
-                    )
-                }
 
-                // Sender name outside the box, aligned to the right
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp, start = 16.dp, end = 16.dp),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    Text(
-                        text = message.sender,
-                        color = Color.DarkGray,
-                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                            .background(color = Color(0xFFE6C5D0), shape = MaterialTheme.shapes.medium)
+                            .padding(16.dp)
+                    ) {
+                        Text(
+                            text = message.content,
+                            color = Color.Black
+                        )
+                    }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp, start = 16.dp, end = 16.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        Text(
+                            text = message.sender,
+                            color = Color.DarkGray,
+                        )
+                    }
+
+                    if (index == messages.size - 1) {
+                        Spacer(modifier = Modifier.height(20.dp))
+                    }
                 }
             }
+            item {
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+        }
+
+        // Message input
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomStart)
+        ) {
+            Spacer(modifier = Modifier.weight(1f))
+            MessageInput(onSendMessage = { sender, newMessage ->
+                // Add the new message at the end of the list
+                messages = messages + MessageModel(sender, newMessage)
+            })
         }
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun MessageInput(onSendMessage: (String, String) -> Unit) {
     var sender by remember { mutableStateOf("John Doe") }
@@ -187,7 +186,6 @@ fun MessageInput(onSendMessage: (String, String) -> Unit) {
                 color = MaterialTheme.colorScheme.onBackground
             ),
             colors = TextFieldDefaults.textFieldColors(
-                //backgroundColor = Color.Transparent,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent
             ),
