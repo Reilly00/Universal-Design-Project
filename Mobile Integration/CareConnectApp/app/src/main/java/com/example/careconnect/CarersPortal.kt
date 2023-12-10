@@ -48,11 +48,9 @@ val strongerPinkColor = Color(0xFF947B83)
 
 @Composable
 fun CarersPortal(navController: NavController? = null) {
-
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 16.dp)
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(lightPinkColor, strongerPinkColor),
@@ -60,31 +58,26 @@ fun CarersPortal(navController: NavController? = null) {
                     endY = 2800f
                 )
             )
+            .padding(16.dp)
     ) {
+        Spacer(modifier = Modifier.height(16.dp))
 
-        Box(
+        Text(
+            text = "Care's Portal",
             modifier = Modifier
-                .align(Alignment.Start)
-                .padding(start = 16.dp)
-        ) {
-            IconButton(
-                onClick = {
-                    navController?.popBackStack()
-                },
-                modifier = Modifier
-                    .background(
-                        color = Color(0xFFBB99A5),
-                        shape = CircleShape
-                    )
-            ) {
-                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.Black)
-            }
-        }
+                .fillMaxWidth()
+                .padding(bottom = 35.dp),
+            style = MaterialTheme.typography.titleLarge
+                .copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),
+            textAlign = TextAlign.Center
+        )
 
         // Content
         MessagingContent(navController = navController)
     }
 }
+
+
 @Composable
 fun MessagingContent(navController: NavController? = null) {
     var messages by remember { mutableStateOf(listOf(
@@ -160,7 +153,7 @@ fun MessagingContent(navController: NavController? = null) {
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun MessageInput(onSendMessage: (String, String) -> Unit) {
     var sender by remember { mutableStateOf("John Doe") }
@@ -177,7 +170,7 @@ fun MessageInput(onSendMessage: (String, String) -> Unit) {
             value = message,
             onValueChange = { message = it },
             modifier = Modifier
-                .weight(1f)
+                //.weight(1f)
                 .padding(end = 8.dp),
 
             placeholder = { Text("Type a message...") },

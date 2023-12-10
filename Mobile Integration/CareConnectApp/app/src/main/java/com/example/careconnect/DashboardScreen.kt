@@ -143,7 +143,8 @@ fun DashboardItem(item: DashboardItemModel, navController: NavController?) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = item.title,
-                    color = MaterialTheme.colorScheme.secondary,
+                    color = Color(0xFF00008B),
+                   // color = MaterialTheme.colorScheme.secondary,
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold
                     ), modifier = Modifier
