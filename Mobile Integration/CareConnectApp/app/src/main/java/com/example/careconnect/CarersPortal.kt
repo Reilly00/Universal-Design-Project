@@ -160,7 +160,7 @@ fun MessagingContent(navController: NavController? = null) {
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun MessageInput(onSendMessage: (String, String) -> Unit) {
     var sender by remember { mutableStateOf("John Doe") }

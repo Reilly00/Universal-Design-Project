@@ -37,32 +37,37 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.TopAppBar
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.careconnect.BottomNavigationBar
 import com.example.careconnect.ui.theme.CareConnectTheme
-
+import com.example.careconnect.R
 
 
 @Composable
 fun ProfileScreen(navController: NavController? = null) {
-    // Sample user details
-    val userDetails = listOf(
-        UserDetailModel("Name", "Mary Mc Donald"),
-        UserDetailModel("Email", "mcdonald.mary@gmail.com"),
-        UserDetailModel("Phone", "+353 085 123 4567"),
-        UserDetailModel("Location", "Dublin, Ireland"),
-        UserDetailModel("Date of Birth", "January 15, 1990"),
-        UserDetailModel("Bio", "Passionate about technology and healthcare."),
-    )
+    val lightPinkColor = Color(0xFFF5F1F2)
+    val strongerPinkColor = Color(0xFF947B83)
+
     Column(
-        modifier = Modifier.padding(16.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 16.dp)
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(lightPinkColor, strongerPinkColor),
+                    startY = -1.5f,
+                    endY = 2800f
+                )
+            )
     ) {
-        // Arrow back button
+
         Box(
             modifier = Modifier
                 .align(Alignment.Start)
-                .padding(start = 16.dp)
+                .padding(start = 30.dp)
         ) {
             IconButton(
                 onClick = {
@@ -78,6 +83,27 @@ fun ProfileScreen(navController: NavController? = null) {
             }
         }
 
+        // Content
+        ProfileContent()
+    }
+}
+
+data class UserDetailModel(val title: String, val subtitle: String)
+@Composable
+fun ProfileContent() {
+    val userDetails = listOf(
+        UserDetailModel("Name", "Mary Mc Donald"),
+        UserDetailModel("Email", "mcdonald.mary@gmail.com"),
+        UserDetailModel("Phone", "+353 085 123 4567"),
+        UserDetailModel("Location", "Dublin, Ireland"),
+        UserDetailModel("Date of Birth", "January 15, 1990"),
+        UserDetailModel("Bio", "Passionate about technology and healthcare."),
+    )
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(5.dp)
+    ) {
         // Header with profile picture
         ProfileHeader()
 
@@ -87,12 +113,8 @@ fun ProfileScreen(navController: NavController? = null) {
                 UserDetailItem(detail)
             }
         }
-
-        // Bottom navigation bar at the end of the Column
-        // navController?.let { BottomNavigationBar(it) }
     }
 }
-
 
 @Composable
 fun ProfileHeader() {
@@ -102,17 +124,18 @@ fun ProfileHeader() {
             .padding(bottom = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
         Image(
-            painter = painterResource(id = android.R.drawable.ic_menu_gallery),
+            painter = painterResource(id = R.drawable.profile),
             contentDescription = null,
             modifier = Modifier
                 .size(120.dp)
                 .clip(CircleShape)
         )
-        // Spacer for separation
+
         Spacer(modifier = Modifier.height(16.dp))
 
-        // User Profile title
+
         Text(
             text = "User Profile",
             style = MaterialTheme.typography.titleLarge,
@@ -121,14 +144,6 @@ fun ProfileHeader() {
     }
 }
 
-@Composable
-fun UserDetailsList(userDetails: List<UserDetailModel>) {
-    LazyColumn {
-        items(userDetails) { detail ->
-            UserDetailItem(detail)
-        }
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -136,38 +151,33 @@ fun UserDetailItem(detail: UserDetailModel) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 8.dp)
-            //.background(color = Color(0xFFE6C5D0), shape = MaterialTheme.shapes.medium)
-            .padding(16.dp),
-        onClick = { /* Handle item click here */ }
+            .padding(10.dp),
+    onClick = { /* Handle item click here */ }
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .background(color = Color(0xFFBB99A5), shape = MaterialTheme.shapes.medium)
+                .padding(2.dp)
         ) {
             Text(
                 text = detail.title,
-                color = MaterialTheme.colorScheme.secondary,
-                style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier.padding(bottom = 8.dp),
+                color = Color(0xFF00008B),
+                style = MaterialTheme.typography.titleMedium,
+               // textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(bottom = 8.dp)
+                    .padding(start = 16.dp),
             )
 
             Text(
                 text = detail.subtitle,
                 style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(bottom = 8.dp)
+                //textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(bottom = 8.dp)
+                    .padding(start = 16.dp)
             )
         }
-    }
-}
-
-
-data class UserDetailModel(val title: String, val subtitle: String)
-
-@Preview(showBackground = true)
-@Composable
-fun ProfileScreenPreview() {
-    CareConnectTheme {
-        ProfileScreen()
     }
 }
