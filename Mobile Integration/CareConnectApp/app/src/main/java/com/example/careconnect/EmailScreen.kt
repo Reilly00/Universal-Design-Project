@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -39,19 +40,19 @@ import com.example.careconnect.ui.theme.CareConnectTheme
 fun EmailScreen(navController: NavController? = null) {
     Column {
         TopAppBar(
-            title = { Text("Email Screen") },
+            title = { Text("Email ") },
             navigationIcon = {
                 IconButton(
                     onClick = {
                         navController?.popBackStack()
                     },
-                    modifier = Modifier.background(color = Color.Transparent)
+                    modifier = Modifier
+                        .background(
+                            color = Color(0xFFBB99A5),
+                            shape = CircleShape
+                        )
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color.Black
-                    )
+                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.Black)
                 }
             }
         )
