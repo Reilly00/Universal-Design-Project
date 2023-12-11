@@ -1,34 +1,32 @@
 package com.example.careconnect
 
+import UserViewModel
+import android.net.Uri
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 
 @Composable
-fun BottomNavigationBar(navController: NavController) {
+fun BottomNavigationBar(navController: NavController, userViewModel: UserViewModel) {
     val navItems = listOf(
         BottomNavItem("Home", Icons.Default.Home),
         BottomNavItem("Settings", Icons.Default.Settings),
@@ -52,8 +50,6 @@ fun BottomNavigationBar(navController: NavController) {
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
-            val navBackStackEntry by rememberUpdatedState(LocalContext.current)
-
             var rotationState by remember { mutableStateOf(0f) }
 
             LaunchedEffect(Unit) {
@@ -66,12 +62,19 @@ fun BottomNavigationBar(navController: NavController) {
             navItems.forEachIndexed { index, navItem ->
                 IconButton(
                     onClick = {
-                        // Handle navigation to the corresponding screen
                         when (index) {
                             0 -> navController.navigate("dashboard")
                             1 -> navController.navigate("settings")
                             2 -> navController.navigate("notifications")
-                            3 -> navController.navigate("profile")
+                            3 -> {
+                                val profilePicUrl = userViewModel.profilePicUrl.value
+                                if (!profilePicUrl.isNullOrEmpty()) {
+                                    val encodedProfilePicUrl = Uri.encode(profilePicUrl)
+                                    navController.navigate("profile/$encodedProfilePicUrl")
+                                } else {
+                                    // Handle the case where profilePicUrl is not available
+                                }
+                            }
                         }
                     },
                     modifier = Modifier
@@ -80,7 +83,6 @@ fun BottomNavigationBar(navController: NavController) {
                             shape = CircleShape
                         )
                 ) {
-                    // Apply the rotation only to the Settings icon
                     if (index == 1) {
                         Icon(
                             imageVector = navItem.icon,

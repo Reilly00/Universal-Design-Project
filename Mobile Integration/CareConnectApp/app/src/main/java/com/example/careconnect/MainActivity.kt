@@ -1,6 +1,7 @@
 package com.example.careconnect
 
 import ProfileScreen
+import UserViewModel
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,6 +9,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -16,10 +19,11 @@ import com.example.careconnect.ui.theme.CareConnectTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             CareConnectTheme {
-                // Navigation controller
                 val navController = rememberNavController()
+                val userViewModel: UserViewModel = viewModel()
 
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -27,17 +31,40 @@ class MainActivity : ComponentActivity() {
                 ) {
                     // Navigation Host
                     NavHost(navController = navController, startDestination = "login") {
-                        composable("login") { LoginScreen(navController) }
-                        composable("register") { RegisterScreen(navController) }
-                        composable("dashboard") { DashboardScreen(navController) }
-                        composable("patientsList") { PatientsListScreen(navController) }
-                        composable("carersPortal") { CarersPortal(navController) }
-                        composable("scanDetails") { ScanDetailsScreen(navController) }
-                        composable("emailScreen") { EmailScreen(navController) }
-                        composable("viewRecords") { MedicalRecordsList(navController) }
-                        composable("settings") { SettingsScreen(navController) }
-                        composable("notifications") { NotificationsScreen(navController) }
-                        composable("profile") { ProfileScreen(navController) }
+                        composable("login") {
+                            LoginScreen(navController, userViewModel)
+                        }
+                        composable("register") {
+                            RegisterScreen(navController)
+                        }
+                        composable("dashboard") {
+                            DashboardScreen(navController, userViewModel)
+                        }
+                        composable("patientsList") {
+                            PatientsListScreen(navController)
+                        }
+                        composable("carersPortal") {
+                            CarersPortal(navController)
+                        }
+                        composable("scanDetails") {
+                            ScanDetailsScreen(navController)
+                        }
+                        composable("emailScreen") {
+                            EmailScreen(navController)
+                        }
+                        composable("viewRecords") {
+                            MedicalRecordsList(navController)
+                        }
+                        composable("settings") {
+                            SettingsScreen(navController, userViewModel)
+                        }
+                        composable("notifications") {
+                            NotificationsScreen(navController, userViewModel)
+                        }
+                        composable("profile/{profilePicUrl}") { backStackEntry ->
+                            val profilePicUrl = backStackEntry.arguments?.getString("profilePicUrl")
+                            ProfileScreen(navController, profilePicUrl)
+                        }
                         composable("patientDetails/{patientName}") { backStackEntry ->
                             val patientName = backStackEntry.arguments?.getString("patientName")
                             val patient = getPatientByName(patientName ?: "")
@@ -52,7 +79,7 @@ class MainActivity : ComponentActivity() {
                             val recordTitle = backStackEntry.arguments?.getString("recordTitle")
                             val record = getRecordByTitle(recordTitle ?: "")
                             if (record != null) {
-                                MedicalRecord(record, navController)
+                                MedicalRecord(record, navController, userViewModel)
                             } else {
                                 // Handle the case where the record is not found
                             }
@@ -61,7 +88,7 @@ class MainActivity : ComponentActivity() {
                             val recordTitle = backStackEntry.arguments?.getString("recordTitle")
                             val record = getRecordByTitle(recordTitle ?: "")
                             if (record != null) {
-                                UpdateMedicalRecord(record)
+                                UpdateMedicalRecord(record, navController, userViewModel)
                             } else {
                                 // Handle the case where the record is not found
                             }

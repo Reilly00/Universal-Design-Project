@@ -63,7 +63,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.4.0-alpha10")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-
+    implementation("io.coil-kt:coil-compose:1.4.0")
 
     implementation("androidx.compose.ui:ui-text-android:1.5.4")
     implementation("androidx.camera:camera-view:1.3.0")

@@ -6,6 +6,18 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.POST
 
+// Data class to match the login response structure
+data class LoginResponse(
+    val message: String,
+    val profile_pic_url: String? // Nullable to handle cases where it might not be provided
+)
+
+// Data class for sending login data
+data class LoginData(val username: String, val password: String)
+
+// Data class for registration data (unchanged)
+data class RegistrationData(val username: String, val email: String, val password: String)
+
 object RetrofitClient {
     private const val BASE_URL = "http://13.51.157.194:5000"
 
@@ -23,8 +35,5 @@ interface ApiService {
     suspend fun registerUser(@Body registrationData: RegistrationData): Response<Unit>
 
     @POST("/login")
-    suspend fun loginUser(@Body loginData: LoginData): Response<Unit>
+    suspend fun loginUser(@Body loginData: LoginData): Response<LoginResponse> // Updated to use LoginResponse
 }
-
-data class RegistrationData(val username: String, val email: String, val password: String)
-data class LoginData(val username: String, val password: String)

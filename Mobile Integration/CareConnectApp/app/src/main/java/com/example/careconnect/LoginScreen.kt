@@ -1,5 +1,7 @@
 package com.example.careconnect
 
+import UserViewModel
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,7 +27,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(navController: NavController? = null) {
+fun LoginScreen(navController: NavController? = null, userViewModel: UserViewModel) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var loginStatus by remember { mutableStateOf(LoginStatus.NONE) }
@@ -50,7 +52,7 @@ fun LoginScreen(navController: NavController? = null) {
         Spacer(modifier = Modifier.weight(1f))
         Image(
             painter = painterResource(R.drawable.logo),
-            contentDescription = "Contact profile picture",
+            contentDescription = "Logo",
             modifier = Modifier
         )
         Spacer(modifier = Modifier.height(128.dp))
@@ -69,22 +71,18 @@ fun LoginScreen(navController: NavController? = null) {
             visualTransformation = PasswordVisualTransformation()
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Button(
-            onClick = {
-                try {
-                    coroutineScope.launch {
-                        val response = RetrofitClient.instance.loginUser(LoginData(username, password))
-                        if (response.isSuccessful) {
-                            loginStatus = LoginStatus.SUCCESS
-                            navController?.navigate("dashboard")
-                        } else {
-                            loginStatus = LoginStatus.ERROR
-                        }
-                    }
-                } catch (e: Exception) {
-                    // Log or print the exception for debugging
-                    e.printStackTrace()
+        Button(onClick = {
+            coroutineScope.launch {
+                val response = RetrofitClient.instance.loginUser(LoginData(username, password))
+                if (response.isSuccessful && response.body() != null) {
+                    val loginResponse = response.body()!!
+                    userViewModel.updateProfilePicUrl(loginResponse.profile_pic_url)
+                    // Navigate to DashboardScreen
+                    navController?.navigate("dashboard")
+                } else {
+                    // Handle login error
                 }
+            }
             },
             shape = MaterialTheme.shapes.medium,
             modifier = Modifier.fillMaxWidth(fraction = 0.5f),

@@ -1,5 +1,6 @@
 package com.example.careconnect
 
+import UserViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,7 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
 @Composable
-fun MedicalRecord(record: RecordModel, navController: NavController) {
+fun MedicalRecord(record: RecordModel, navController: NavController, userViewModel: UserViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -103,7 +104,7 @@ fun MedicalRecord(record: RecordModel, navController: NavController) {
             Text("Update Record")
         }
 
-        navController?.let { BottomNavigationBar(it) }
+        navController?.let { BottomNavigationBar(it, userViewModel) }
     }
 }
 
