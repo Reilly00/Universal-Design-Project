@@ -108,7 +108,7 @@ fun DashboardItem(item: DashboardItemModel, navController: NavController?) {
             },
         shape = MaterialTheme.shapes.medium,
 
-    ) {
+        ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -152,7 +152,7 @@ fun DashboardItem(item: DashboardItemModel, navController: NavController?) {
                 Text(
                     text = item.title,
                     color = Color(0xFF00008B),
-                   // color = MaterialTheme.colorScheme.secondary,
+                    // color = MaterialTheme.colorScheme.secondary,
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold
                     ), modifier = Modifier
@@ -173,7 +173,7 @@ fun getDashboardItems(): List<DashboardItemModel> {
         DashboardItemModel("Scan Details", R.drawable.qrcode),
         DashboardItemModel("Email", R.drawable.email),
         DashboardItemModel("View Records", R.drawable.record),
-        DashboardItemModel("Update Records", R.drawable.updated)// Update Record Button Moved into the record page itself
+        DashboardItemModel("Update Records", R.drawable.updated)
     )
 }
 
