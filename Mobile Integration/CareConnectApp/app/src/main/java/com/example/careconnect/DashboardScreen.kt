@@ -1,5 +1,6 @@
 package com.example.careconnect
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,8 +22,10 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -81,6 +84,8 @@ fun TwoItemRow(items: List<DashboardItemModel>, navController: NavController?) {
 
 @Composable
 fun DashboardItem(item: DashboardItemModel, navController: NavController?) {
+    val alpha by animateFloatAsState(targetValue = 1f, label = "")
+
     Card(
         modifier = Modifier
             .width(152.dp)
@@ -107,8 +112,7 @@ fun DashboardItem(item: DashboardItemModel, navController: NavController?) {
                 }
             },
         shape = MaterialTheme.shapes.medium,
-
-        ) {
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -133,7 +137,8 @@ fun DashboardItem(item: DashboardItemModel, navController: NavController?) {
                     if (item.title == "View Records") {
                         navController?.navigate("viewRecords")
                     }
-                },
+                }
+                .alpha(alpha), // Apply the alpha value to the Box
         ) {
             Column(
                 modifier = Modifier
@@ -152,11 +157,10 @@ fun DashboardItem(item: DashboardItemModel, navController: NavController?) {
                 Text(
                     text = item.title,
                     color = Color(0xFF00008B),
-                    // color = MaterialTheme.colorScheme.secondary,
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold
-                    ), modifier = Modifier
-                        .wrapContentSize()
+                    ),
+                    modifier = Modifier.wrapContentSize()
                 )
             }
         }
