@@ -1,21 +1,12 @@
 package com.example.careconnect
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -31,19 +22,10 @@ fun LoginScreen(navController: NavController? = null) {
     var loginStatus by remember { mutableStateOf(LoginStatus.NONE) }
     val coroutineScope = rememberCoroutineScope()
 
-    val lightPinkColor = Color(0xFFF5F1F2)
-    val strongerPinkColor = Color(0xFF947B83)
-
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(lightPinkColor, strongerPinkColor),
-                    startY = -1.5f,
-                    endY = 2800f
-                )
-            ),
+            .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -57,14 +39,14 @@ fun LoginScreen(navController: NavController? = null) {
         OutlinedTextField(
             value = username,
             onValueChange = { username = it.trim() },
-            label = { Text("Email", color = Color.Black) },
+            label = { Text("Email") },
             singleLine = true
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
             value = password,
             onValueChange = { password = it.trim() },
-            label = { Text("Password", color = Color.Black) },
+            label = { Text("Password") },
             singleLine = true,
             visualTransformation = PasswordVisualTransformation()
         )
@@ -97,7 +79,6 @@ fun LoginScreen(navController: NavController? = null) {
         Spacer(modifier = Modifier.height(10.dp))
         Text(
             text = "Don't have an account? Register here",
-            color = Color.Black, // Set text color
             modifier = Modifier.clickable { navController?.navigate("register") }
         )
         Spacer(modifier = Modifier.weight(1f))

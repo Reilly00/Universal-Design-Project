@@ -1,27 +1,20 @@
 package com.example.careconnect
 
+import android.widget.GridLayout
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.BottomCenter
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -43,7 +36,6 @@ fun DashboardScreen(navController: NavController? = null) {
     ) {
         Text(
             text = "Dashboard",
-            color = Color(0xFF00008B),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 35.dp),
@@ -61,7 +53,7 @@ fun DashboardScreen(navController: NavController? = null) {
         }
 
 
-        navController?.let { BottomNavigationBar(it) }
+        BottomNavigationBar()
     }
 }
 
@@ -90,21 +82,6 @@ fun DashboardItem(item: DashboardItemModel, navController: NavController?) {
                     navController?.navigate("patientsList")
                 }
 
-                if (item.title == "Carer's Portal") {
-                    navController?.navigate("carersPortal")
-                }
-
-                if (item.title == "Scan Details") {
-                    navController?.navigate("scanDetails")
-                }
-
-                if (item.title == "Email") {
-                    navController?.navigate("emailScreen")
-                }
-
-                if (item.title == "View Records") {
-                    navController?.navigate("viewRecords")
-                }
             },
         shape = MaterialTheme.shapes.medium,
 
@@ -112,27 +89,11 @@ fun DashboardItem(item: DashboardItemModel, navController: NavController?) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFBB99A5))
                 .clickable {
                     if (item.title == "Patients") {
                         navController?.navigate("patientsList")
                     }
 
-                    if (item.title == "Carer's Portal") {
-                        navController?.navigate("carersPortal")
-                    }
-
-                    if (item.title == "Scan Details") {
-                        navController?.navigate("scanDetails")
-                    }
-
-                    if (item.title == "Email") {
-                        navController?.navigate("emailScreen")
-                    }
-
-                    if (item.title == "View Records") {
-                        navController?.navigate("viewRecords")
-                    }
                 },
         ) {
             Column(
@@ -151,8 +112,7 @@ fun DashboardItem(item: DashboardItemModel, navController: NavController?) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = item.title,
-                    color = Color(0xFF00008B),
-                   // color = MaterialTheme.colorScheme.secondary,
+                    color = MaterialTheme.colorScheme.secondary,
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold
                     ), modifier = Modifier
@@ -173,7 +133,7 @@ fun getDashboardItems(): List<DashboardItemModel> {
         DashboardItemModel("Scan Details", R.drawable.qrcode),
         DashboardItemModel("Email", R.drawable.email),
         DashboardItemModel("View Records", R.drawable.record),
-        DashboardItemModel("Update Records", R.drawable.updated)// Update Record Button Moved into the record page itself
+        DashboardItemModel("Update Record", R.drawable.updated),
     )
 }
 
