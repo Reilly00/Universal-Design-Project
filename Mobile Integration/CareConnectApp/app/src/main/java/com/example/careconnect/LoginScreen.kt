@@ -71,14 +71,19 @@ fun LoginScreen(navController: NavController? = null) {
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
-                coroutineScope.launch {
-                    val response = RetrofitClient.instance.loginUser(LoginData(username, password))
-                    if (response.isSuccessful) {
-                        loginStatus = LoginStatus.SUCCESS
-                        navController?.navigate("dashboard")
-                    } else {
-                        loginStatus = LoginStatus.ERROR
+                try {
+                    coroutineScope.launch {
+                        val response = RetrofitClient.instance.loginUser(LoginData(username, password))
+                        if (response.isSuccessful) {
+                            loginStatus = LoginStatus.SUCCESS
+                            navController?.navigate("dashboard")
+                        } else {
+                            loginStatus = LoginStatus.ERROR
+                        }
                     }
+                } catch (e: Exception) {
+                    // Log or print the exception for debugging
+                    e.printStackTrace()
                 }
             },
             shape = MaterialTheme.shapes.medium,
