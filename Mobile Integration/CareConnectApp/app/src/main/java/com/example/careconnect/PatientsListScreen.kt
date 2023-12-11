@@ -173,7 +173,5 @@ fun PatientListItem(patient: PatientModel, navController: NavController) {
     }
 }
 
-
-
 // Data model for the patients
 data class PatientModel(val number: String, val name: String, val diagnosis: String)
