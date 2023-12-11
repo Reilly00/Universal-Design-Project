@@ -95,6 +95,3 @@ fun PatientDetailsScreen(patient: PatientModel, navController: NavController? = 
     }
 
 }
-
-
-
