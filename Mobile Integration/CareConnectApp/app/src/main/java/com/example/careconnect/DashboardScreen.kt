@@ -173,7 +173,7 @@ fun getDashboardItems(): List<DashboardItemModel> {
         DashboardItemModel("Scan Details", R.drawable.qrcode),
         DashboardItemModel("Email", R.drawable.email),
         DashboardItemModel("View Records", R.drawable.record),
-        DashboardItemModel("Update Records", R.drawable.updated)
+        DashboardItemModel("Update Records", R.drawable.updated)// Update Record Button Moved into the record page itself
     )
 }
 
