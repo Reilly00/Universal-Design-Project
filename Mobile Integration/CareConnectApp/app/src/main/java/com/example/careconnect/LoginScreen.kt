@@ -3,7 +3,6 @@ package com.example.careconnect
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,15 +20,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import kotlinx.coroutines.launch
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(navController: NavController? = null) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var loginStatus by remember { mutableStateOf(LoginStatus.NONE) }
-    val coroutineScope = rememberCoroutineScope()
 
     val lightPinkColor = Color(0xFFF5F1F2)
     val strongerPinkColor = Color(0xFF947B83)
@@ -49,7 +44,7 @@ fun LoginScreen(navController: NavController? = null) {
     ) {
         Spacer(modifier = Modifier.weight(1f))
         Image(
-            painter = painterResource(R.drawable.logo),
+            painter = painterResource(R.drawable.care),
             contentDescription = "Contact profile picture",
             modifier = Modifier
         )
@@ -70,35 +65,17 @@ fun LoginScreen(navController: NavController? = null) {
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(
-            onClick = {
-                try {
-                    coroutineScope.launch {
-                        val response = RetrofitClient.instance.loginUser(LoginData(username, password))
-                        if (response.isSuccessful) {
-                            loginStatus = LoginStatus.SUCCESS
-                            navController?.navigate("dashboard")
-                        } else {
-                            loginStatus = LoginStatus.ERROR
-                        }
-                    }
-                } catch (e: Exception) {
-                    // Log or print the exception for debugging
-                    e.printStackTrace()
-                }
-            },
+            onClick = { /* TODO: Add login logic here, not needed for current build */ },
             shape = MaterialTheme.shapes.medium,
             modifier = Modifier.fillMaxWidth(fraction = 0.5f),
             contentPadding = PaddingValues(16.dp)
         ) {
-            Text(text = "Login")
+            Text(
+                text = "Login",
+                color = Color.White, // Set button text color
+                modifier = Modifier.clickable { navController?.navigate("dashboard") }
+            )
         }
-
-        when (loginStatus) {
-            LoginStatus.SUCCESS -> Text("Login successful")
-            LoginStatus.ERROR -> Text("Login failed", color = Color.Red)
-            else -> {} // Do nothing for NONE
-        }
-
         Spacer(modifier = Modifier.height(10.dp))
         Text(
             text = "Don't have an account? Register here",
@@ -107,8 +84,4 @@ fun LoginScreen(navController: NavController? = null) {
         )
         Spacer(modifier = Modifier.weight(1f))
     }
-}
-
-enum class LoginStatus {
-    NONE, SUCCESS, ERROR
 }
