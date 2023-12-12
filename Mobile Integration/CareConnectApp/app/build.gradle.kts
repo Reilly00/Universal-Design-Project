@@ -81,4 +81,7 @@ dependencies {
     implementation ("androidx.camera:camera-extensions:1.0.0-alpha30")
     implementation ("androidx.camera:camera-lifecycle:1.1.0")
     //implementation("com.journeyapps:zxing-android-embedded:4.2.0")
+
+    implementation ("androidx.room:room-runtime:2.4.2")
+    annotationProcessor ("androidx.room:room-compiler:2.4.2")
 }
