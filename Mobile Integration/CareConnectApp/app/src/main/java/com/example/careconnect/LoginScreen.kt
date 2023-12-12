@@ -31,6 +31,7 @@ fun LoginScreen(navController: NavController? = null, userViewModel: UserViewMod
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var loginStatus by remember { mutableStateOf(LoginStatus.NONE) }
+    var isLoginInProgress by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
     val lightPinkColor = Color(0xFFF5F1F2)
@@ -71,19 +72,31 @@ fun LoginScreen(navController: NavController? = null, userViewModel: UserViewMod
             visualTransformation = PasswordVisualTransformation()
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = {
-            coroutineScope.launch {
-                val response = RetrofitClient.instance.loginUser(LoginData(username, password))
-                if (response.isSuccessful && response.body() != null) {
-                    val loginResponse = response.body()!!
-                    userViewModel.updateProfilePicUrl(loginResponse.profile_pic_url)
-                    // Navigate to DashboardScreen
-                    navController?.navigate("dashboard")
-                } else {
-                    // Handle login error
+        Button(
+            onClick = {
+                if (!isLoginInProgress) {
+                    isLoginInProgress = true
+                    coroutineScope.launch {
+                        try {
+                            val response = RetrofitClient.instance.loginUser(LoginData(username, password))
+                            if (response.isSuccessful && response.body() != null) {
+                                val loginResponse = response.body()!!
+                                userViewModel.updateProfilePicUrl(loginResponse.profile_pic_url)
+                                navController?.navigate("dashboard")
+                                loginStatus = LoginStatus.SUCCESS
+                            } else {
+                                loginStatus = LoginStatus.ERROR
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            loginStatus = LoginStatus.ERROR
+                        } finally {
+                            isLoginInProgress = false
+                        }
+                    }
                 }
-            }
             },
+            enabled = !isLoginInProgress,
             shape = MaterialTheme.shapes.medium,
             modifier = Modifier.fillMaxWidth(fraction = 0.5f),
             contentPadding = PaddingValues(16.dp)

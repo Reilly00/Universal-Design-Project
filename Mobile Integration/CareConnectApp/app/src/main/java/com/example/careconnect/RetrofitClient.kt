@@ -15,7 +15,7 @@ data class LoginResponse(
 // Data class for sending login data
 data class LoginData(val username: String, val password: String)
 
-// Data class for registration data (unchanged)
+// Data class for registration data
 data class RegistrationData(val username: String, val email: String, val password: String)
 
 object RetrofitClient {
@@ -35,5 +35,5 @@ interface ApiService {
     suspend fun registerUser(@Body registrationData: RegistrationData): Response<Unit>
 
     @POST("/login")
-    suspend fun loginUser(@Body loginData: LoginData): Response<LoginResponse> // Updated to use LoginResponse
+    suspend fun loginUser(@Body loginData: LoginData): Response<LoginResponse>
 }
