@@ -1,8 +1,11 @@
 package com.example.careconnect
 
+import UserViewModel
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,11 +23,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(navController: NavController? = null) {
+fun LoginScreen(navController: NavController? = null, userViewModel: UserViewModel) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var loginStatus by remember { mutableStateOf(LoginStatus.NONE) }
+    var isLoginInProgress by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
 
     val lightPinkColor = Color(0xFFF5F1F2)
     val strongerPinkColor = Color(0xFF947B83)
@@ -44,8 +52,8 @@ fun LoginScreen(navController: NavController? = null) {
     ) {
         Spacer(modifier = Modifier.weight(1f))
         Image(
-            painter = painterResource(R.drawable.care),
-            contentDescription = "Contact profile picture",
+            painter = painterResource(R.drawable.logo),
+            contentDescription = "Logo",
             modifier = Modifier
         )
         Spacer(modifier = Modifier.height(128.dp))
@@ -65,17 +73,43 @@ fun LoginScreen(navController: NavController? = null) {
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(
-            onClick = { /* TODO: Add login logic here, not needed for current build */ },
+            onClick = {
+                if (!isLoginInProgress) {
+                    isLoginInProgress = true
+                    coroutineScope.launch {
+                        try {
+                            val response = RetrofitClient.instance.loginUser(LoginData(username, password))
+                            if (response.isSuccessful && response.body() != null) {
+                                val loginResponse = response.body()!!
+                                userViewModel.updateProfilePicUrl(loginResponse.profile_pic_url)
+                                navController?.navigate("dashboard")
+                                loginStatus = LoginStatus.SUCCESS
+                            } else {
+                                loginStatus = LoginStatus.ERROR
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            loginStatus = LoginStatus.ERROR
+                        } finally {
+                            isLoginInProgress = false
+                        }
+                    }
+                }
+            },
+            enabled = !isLoginInProgress,
             shape = MaterialTheme.shapes.medium,
             modifier = Modifier.fillMaxWidth(fraction = 0.5f),
             contentPadding = PaddingValues(16.dp)
         ) {
-            Text(
-                text = "Login",
-                color = Color.White, // Set button text color
-                modifier = Modifier.clickable { navController?.navigate("dashboard") }
-            )
+            Text(text = "Login")
         }
+
+        when (loginStatus) {
+            LoginStatus.SUCCESS -> Text("Login successful")
+            LoginStatus.ERROR -> Text("Login failed", color = Color.Red)
+            else -> {} // Do nothing for NONE
+        }
+
         Spacer(modifier = Modifier.height(10.dp))
         Text(
             text = "Don't have an account? Register here",
@@ -84,4 +118,8 @@ fun LoginScreen(navController: NavController? = null) {
         )
         Spacer(modifier = Modifier.weight(1f))
     }
+}
+
+enum class LoginStatus {
+    NONE, SUCCESS, ERROR
 }

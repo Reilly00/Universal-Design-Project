@@ -25,6 +25,7 @@ fun RegisterScreen(navController: NavController? = null) {
     var passwordError by remember { mutableStateOf(false) }
     var passwordRequirementError by remember { mutableStateOf("") }
     var registrationStatus by remember { mutableStateOf<RegistrationStatus>(RegistrationStatus.NONE) }
+    var isRegistrationInProgress by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
     val passwordStrength = getPasswordStrength(password)
@@ -113,20 +114,29 @@ fun RegisterScreen(navController: NavController? = null) {
                     "Password must: \nBe at least 8 characters, \ninclude an uppercase letter, \nlowercase letter, symbol, and a number."
                 } else ""
 
-                if (emailError.isEmpty() && !passwordError && passwordRequirementError.isEmpty()) {
+                if (emailError.isEmpty() && !passwordError && passwordRequirementError.isEmpty() && !isRegistrationInProgress) {
+                    isRegistrationInProgress = true
                     coroutineScope.launch {
-                        val response = RetrofitClient.instance.registerUser(
-                            RegistrationData(username = email, email = email, password = password)
-                        )
-                        if (response.isSuccessful) {
-                            registrationStatus = RegistrationStatus.SUCCESS
-                            navController?.navigate("dashboard")
-                        } else {
+                        try {
+                            val response = RetrofitClient.instance.registerUser(
+                                RegistrationData(username = email, email = email, password = password)
+                            )
+                            if (response.isSuccessful) {
+                                registrationStatus = RegistrationStatus.SUCCESS
+                                navController?.navigate("dashboard")
+                            } else {
+                                registrationStatus = RegistrationStatus.ERROR
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
                             registrationStatus = RegistrationStatus.ERROR
+                        } finally {
+                            isRegistrationInProgress = false
                         }
                     }
                 }
             },
+            enabled = !isRegistrationInProgress,
             shape = MaterialTheme.shapes.medium,
             modifier = Modifier.fillMaxWidth(fraction = 0.5f),
             contentPadding = PaddingValues(16.dp)
