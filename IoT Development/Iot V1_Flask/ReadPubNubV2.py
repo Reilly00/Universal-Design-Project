@@ -34,6 +34,7 @@ cursor = conn.cursor()
 #     medical_data TEXT NOT NULL
 # );
 
+
 def publish_to_pubnub(patient_id, medical_data):
     channel = "medical_data_channel"
 
@@ -48,17 +49,19 @@ def publish_to_pubnub(patient_id, medical_data):
         print("Medical data published to PubNub.")
 
         # Insert data into SQLite tables
-        cursor.execute("INSERT INTO cards (patient_id, medical_data) VALUES (?, ?)", (patient_id, medical_data))
+        cursor.execute(
+            "INSERT INTO cards (patient_id, medical_data) VALUES (?, ?)", (patient_id, medical_data))
         conn.commit()
 
     except Exception as e:
         print(f"Error: {e}")
         conn.rollback()  # Rollback the transaction in case of an error
 
+
 try:
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
-    
+
     reader = SimpleMFRC522()
 
     while True:
