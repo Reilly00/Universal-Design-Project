@@ -1,5 +1,6 @@
 package com.example.careconnect
 
+import UserViewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,14 +28,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.careconnect.ui.theme.CareConnectTheme
+
 
 @Composable
-fun DashboardScreen(navController: NavController? = null) {
+fun DashboardScreen(navController: NavController? = null, userViewModel: UserViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -60,7 +60,7 @@ fun DashboardScreen(navController: NavController? = null) {
         }
 
 
-        navController?.let { BottomNavigationBar(it) }
+        navController?.let { BottomNavigationBar(it, userViewModel) }
     }
 }
 
@@ -172,15 +172,6 @@ fun getDashboardItems(): List<DashboardItemModel> {
         DashboardItemModel("Scan Details", R.drawable.qrcode),
         DashboardItemModel("Email", R.drawable.email),
         DashboardItemModel("View Records", R.drawable.record),
-        DashboardItemModel("Update Records", R.drawable.updated)// Update Record Button Moved into the record page itself
+        DashboardItemModel("Update Records", R.drawable.updated)
     )
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewDashboard() {
-    CareConnectTheme {
-        DashboardScreen()
-    }
 }

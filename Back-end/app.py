@@ -83,7 +83,10 @@ def login():
 
     user = get_user(username)
     if user and verify_password(password, user['password_hash']):
-        return jsonify({"message": "Login successful"}), 200
+        return jsonify({
+            "message": "Login successful",
+            "profile_pic_url": user.get('profile_pic_url')  # Add this line
+        }), 200
     else:
         return jsonify({"message": "Invalid username or password"}), 401
 

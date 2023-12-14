@@ -1,4 +1,3 @@
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -20,13 +19,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberImagePainter
 import androidx.navigation.NavController
 import com.example.careconnect.R
 
 @Composable
-fun ProfileScreen(navController: NavController? = null) {
+fun ProfileScreen(navController: NavController? = null, profilePicUrl: String? = null) {
     val lightPinkColor = Color(0xFFF5F1F2)
     val strongerPinkColor = Color(0xFF947B83)
 
@@ -62,15 +61,12 @@ fun ProfileScreen(navController: NavController? = null) {
             }
         }
 
-        // Content
-        ProfileContent()
+        ProfileContent(profilePicUrl ?: "")
     }
 }
 
-
-data class UserDetailModel(val title: String, val subtitle: String)
 @Composable
-fun ProfileContent() {
+fun ProfileContent(profilePicUrl: String) {
     val userDetails = listOf(
         UserDetailModel("Name", "Mary Mc Donald"),
         UserDetailModel("Email", "mcdonald.mary@gmail.com"),
@@ -79,15 +75,14 @@ fun ProfileContent() {
         UserDetailModel("Date of Birth", "January 15, 1990"),
         UserDetailModel("Bio", "Passionate about technology and healthcare."),
     )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(5.dp)
     ) {
-        // Header with profile picture
-        ProfileHeader()
+        ProfileHeader(profilePicUrl)
 
-        // User details
         LazyColumn {
             items(userDetails) { detail ->
                 UserDetailItem(detail)
@@ -97,24 +92,29 @@ fun ProfileContent() {
 }
 
 @Composable
-fun ProfileHeader() {
+fun ProfileHeader(imageUrl: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        val imagePainter = rememberImagePainter(
+            data = imageUrl,
+            builder = {
+                crossfade(true)
+            }
+        )
 
         Image(
-            painter = painterResource(id = R.drawable.profile),
-            contentDescription = null,
+            painter = imagePainter,
+            contentDescription = "Profile Picture",
             modifier = Modifier
                 .size(120.dp)
                 .clip(CircleShape)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-
 
         Text(
             text = "User Profile",
@@ -124,7 +124,6 @@ fun ProfileHeader() {
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserDetailItem(detail: UserDetailModel) {
@@ -132,7 +131,7 @@ fun UserDetailItem(detail: UserDetailModel) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp),
-    onClick = { /* Handle item click here */ }
+        onClick = { /* Handle item click here */ }
     ) {
         Column(
             modifier = Modifier
@@ -144,7 +143,6 @@ fun UserDetailItem(detail: UserDetailModel) {
                 text = detail.title,
                 color = Color(0xFF00008B),
                 style = MaterialTheme.typography.titleMedium,
-               // textAlign = TextAlign.Center,
                 modifier = Modifier
                     .padding(bottom = 8.dp)
                     .padding(start = 16.dp),
@@ -153,7 +151,6 @@ fun UserDetailItem(detail: UserDetailModel) {
             Text(
                 text = detail.subtitle,
                 style = MaterialTheme.typography.titleLarge,
-                //textAlign = TextAlign.Center,
                 modifier = Modifier
                     .padding(bottom = 8.dp)
                     .padding(start = 16.dp)
@@ -161,3 +158,5 @@ fun UserDetailItem(detail: UserDetailModel) {
         }
     }
 }
+
+data class UserDetailModel(val title: String, val subtitle: String)

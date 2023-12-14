@@ -18,3 +18,8 @@ CREATE TABLE user_details (
 );
 
 INSERT INTO users (username, email, password_hash) VALUES ('testuser', 'testuser@example.com', 'testpassword');
+
+ALTER TABLE users ADD COLUMN profile_pic_url VARCHAR(255);
+UPDATE users SET profile_pic_url = 'https://tr.rbxcdn.com/38c6edcb50633730ff4cf39ac8859840/420/420/Hat/Png' WHERE user_id = 2;
+
+UPDATE users SET profile_pic_url = 'https://www.trustontap.com/wp-content/uploads/2020/04/helen-de-hartog-trustontap.jpg' WHERE user_id = 4;

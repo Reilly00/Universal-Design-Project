@@ -63,41 +63,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.4.0-alpha10")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-
-
-
-
-    implementation("com.pubnub:pubnub-android:6.0.0")
-    implementation("com.pubnub:pubnub-gson:6.0.0")
-    implementation("com.pubnub:pubnub-okhttp:6.0.0")
-    implementation("com.pubnub:pubnub-logging:6.0.0")
-    implementation("com.pubnub:pubnub-crypto:6.0.0")
-    implementation("com.pubnub:pubnub:5.9.0")
-    implementation("com.pubnub:pubnub-gson:5.9.0")
-
-    implementation ("com.google.android.material:material3:1.5.0-alpha01")
-    implementation ("androidx.compose.material3:material-icons-extended:1.0.0-beta02")
-    implementation ("androidx.activity:activity-compose:1.3.1")
-    implementation ("com.pubnub:pubnub-gson:4.40.5")
-    implementation ("com.pubnub:pubnub-android:7.0.0")
-
-    implementation ("io.github.franmcod:pubnub-compose:1.0.0") // Add the PubNub Compose library
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
-    implementation ("androidx.activity:activity-compose:1.3.1")
-    implementation ("androidx.compose.ui:ui-tooling:1.0.5")
-    implementation ("androidx.navigation:navigation-compose:2.4.0-alpha02")
-    implementation ("androidx.compose.material:material:1.0.5")
-
-
-
-
-
-
-
-
-
-
+    implementation("io.coil-kt:coil-compose:1.4.0")
 
     implementation("androidx.compose.ui:ui-text-android:1.5.4")
     implementation("androidx.camera:camera-view:1.3.0")
@@ -116,6 +82,6 @@ dependencies {
     implementation ("androidx.camera:camera-lifecycle:1.1.0")
     //implementation("com.journeyapps:zxing-android-embedded:4.2.0")
 
-
-
+    implementation ("androidx.room:room-runtime:2.4.2")
+    annotationProcessor ("androidx.room:room-compiler:2.4.2")
 }
