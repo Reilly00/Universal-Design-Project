@@ -3,10 +3,13 @@ import uuid
 import logging
 import pymysql
 import bcrypt
-from flask import Flask, request, jsonify
-from dotenv import load_dotenv
-from pubnub.pubnub import PubNub, SubscribeCallback
 from pubnub.pnconfiguration import PNConfiguration
+from pubnub.pubnub import PubNub, SubscribeCallback
+from dotenv import load_dotenv
+from flask import Flask, request, jsonify
+
+# Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Load environment variables
 load_dotenv()
@@ -22,12 +25,15 @@ db_config = {
     'port': int(os.environ.get('DB_PORT', 3306)),
 }
 
-# PubNub configuration
+# Get PubNub keys from the environment variables
+pubnub_subscribe_key = os.getenv("PUBNUB_SUBSCRIBE_KEY")
+pubnub_publish_key = os.getenv("PUBNUB_PUBLISH_KEY")
+
 pnconfig = PNConfiguration()
-pnconfig.subscribe_key = os.environ.get('sub-c-397c95e0-69bd-460b-be3a-76b966f22ac7')
-pnconfig.publish_key = os.environ.get('pub-c-722f5c5e-5048-4c97-b20e-1b9e16eb6444')
+pnconfig.subscribe_key = pubnub_subscribe_key
+pnconfig.publish_key = pubnub_publish_key
 pnconfig.uuid = str(uuid.uuid4())
-pnconfig.ssl = True
+pnconfig.ssl = False
 
 pubnub = PubNub(pnconfig)
 
@@ -51,12 +57,34 @@ def insert_user(username, email, password_hash):
 def get_user(username):
     connection = pymysql.connect(**db_config)
     try:
-        with connection.cursor(pymysql.cursors.DictCursor) as cursor:  # Use DictCursor
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
             sql = "SELECT * FROM users WHERE username = %s"
             cursor.execute(sql, (username,))
             return cursor.fetchone()
     finally:
         connection.close()
+
+# PubNub subscribe callback
+class MySubscribeCallback(SubscribeCallback):
+    def message(self, pubnub, message):
+        logging.info(f"Received message: {message.message}")
+        patient_id = message.message.get('patient_id')
+        medical_data = message.message.get('medical_data')
+        
+        # Process the received data (e.g., insert into database)
+        try:
+            with pymysql.connect(**db_config) as connection:
+                with connection.cursor() as cursor:
+                    sql = "INSERT INTO cards (patient_id, medical_data) VALUES (%s, %s)"
+                    cursor.execute(sql, (patient_id, medical_data))
+                connection.commit()
+                logging.info("Data saved to database")
+        except Exception as e:
+            logging.error(f"Error in saving to database: {e}")
+
+# Add PubNub listener and subscribe to the channel
+pubnub.add_listener(MySubscribeCallback())
+pubnub.subscribe().channels("medical_data_channel").execute()
 
 # Flask routes
 @app.route('/')
@@ -83,23 +111,18 @@ def login():
 
     user = get_user(username)
     if user and verify_password(password, user['password_hash']):
-        return jsonify({
-            "message": "Login successful",
-            "profile_pic_url": user.get('profile_pic_url')  # Add this line
-        }), 200
+        return jsonify({"message": "Login successful", "profile_pic_url": user.get('profile_pic_url')}), 200
     else:
         return jsonify({"message": "Invalid username or password"}), 401
 
-# PubNub subscription callback
-class MySubscribeCallback(SubscribeCallback):
-    def message(self, pubnub, message):
-        logging.info(f"Received message: {message.message}")
-        print("Received PubNub message:", message.message)
-        # Add logic for handling incoming PubNub messages
-        # For example, inserting patient data into the database
-
 if __name__ == '__main__':
-    logging.basicConfig(filename='app.log', level=logging.INFO)
-    pubnub.add_listener(MySubscribeCallback())
-    pubnub.subscribe().channels('careconnect').execute()
-    app.run(debug=True)
+    try:
+        app.run(host='0.0.0.0', port=5000)
+    except KeyboardInterrupt:
+        logging.info("Shutting down gracefully...")
+        # Unsubscribe and stop PubNub instance
+        pubnub.unsubscribe().channels("medical_data_channel").execute()
+        pubnub.stop()
+        logging.info("PubNub unsubscribed and stopped.")
+        # Add any other cleanup code here if necessary
+        logging.info("Application stopped.")

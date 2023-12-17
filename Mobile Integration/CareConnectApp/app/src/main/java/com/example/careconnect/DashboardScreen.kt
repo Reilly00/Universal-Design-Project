@@ -36,21 +36,17 @@ import androidx.navigation.NavController
 
 @Composable
 fun DashboardScreen(navController: NavController? = null, userViewModel: UserViewModel) {
-functionality-user
-        Column(
-
     Column(
- main
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 15.dp, start = 16.dp, end = 16.dp)
+            .padding(top = 16.dp, start = 16.dp, end = 16.dp)
     ) {
         Text(
             text = "Dashboard",
             color = Color(0xFF00008B),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 17.dp),
+                .padding(bottom = 20.dp),
             style = MaterialTheme.typography.titleLarge
                 .copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),
             textAlign = TextAlign.Center
@@ -62,8 +58,8 @@ functionality-user
             items(getDashboardItems().chunked(2)) { rowItems ->
                 TwoItemRow(rowItems, navController)
             }
-        }
 
+        }
 
         navController?.let { BottomNavigationBar(it, userViewModel) }
     }
@@ -74,8 +70,10 @@ fun TwoItemRow(items: List<DashboardItemModel>, navController: NavController?) {
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+            .fillMaxSize()
+            .padding(start = 10.dp),
+        //.weight(1f),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         items(items) { dashboardItem ->
             DashboardItem(dashboardItem, navController)
@@ -87,8 +85,8 @@ fun TwoItemRow(items: List<DashboardItemModel>, navController: NavController?) {
 fun DashboardItem(item: DashboardItemModel, navController: NavController?) {
     Card(
         modifier = Modifier
-            .width(140.dp)
-            //.fillMaxWidth()
+
+            .width(148.dp)
             .height(130.dp)
             .clickable {
                 if (item.title == "Patients") {
@@ -109,6 +107,9 @@ fun DashboardItem(item: DashboardItemModel, navController: NavController?) {
 
                 if (item.title == "View Records") {
                     navController?.navigate("viewRecords")
+                }
+                if (item.title == "About Care") {
+                    navController?.navigate("AboutCareConnect")
                 }
             },
         shape = MaterialTheme.shapes.medium,
@@ -138,11 +139,15 @@ fun DashboardItem(item: DashboardItemModel, navController: NavController?) {
                     if (item.title == "View Records") {
                         navController?.navigate("viewRecords")
                     }
+                    if (item.title == "About Care") {
+                        navController?.navigate("AboutCareConnect")
+                    }
                 },
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .fillMaxWidth()
                     .padding(5.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -161,13 +166,13 @@ fun DashboardItem(item: DashboardItemModel, navController: NavController?) {
                     // color = MaterialTheme.colorScheme.secondary,
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold
-                    ), modifier = Modifier.wrapContentSize()
+                    ), modifier = Modifier
+                        .wrapContentSize()
                 )
             }
         }
     }
 }
-
 
 data class DashboardItemModel(val title: String, val imageResourceId: Int)
 
@@ -178,6 +183,6 @@ fun getDashboardItems(): List<DashboardItemModel> {
         DashboardItemModel("Scan Details", R.drawable.qrcode),
         DashboardItemModel("Email", R.drawable.email),
         DashboardItemModel("View Records", R.drawable.record),
-        DashboardItemModel("Update Records", R.drawable.updated)
+        DashboardItemModel("About Care", R.drawable.about)
     )
 }

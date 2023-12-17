@@ -85,4 +85,5 @@ dependencies {
 
     implementation ("androidx.room:room-runtime:2.4.2")
     annotationProcessor ("androidx.room:room-compiler:2.4.2")
+    implementation ("com.google.android.gms:play-services-mlkit-barcode-scanning:16.1.02")
 }

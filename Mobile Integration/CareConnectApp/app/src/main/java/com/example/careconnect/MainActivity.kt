@@ -62,6 +62,9 @@ class MainActivity : ComponentActivity() {
                         composable("notifications") {
                             NotificationsScreen(navController, userViewModel)
                         }
+                        composable("AboutCareConnect") {
+                            AboutCare(navController)
+                        }
                         composable("profile/{profilePicUrl}") { backStackEntry ->
                             val profilePicUrl = backStackEntry.arguments?.getString("profilePicUrl")
                             ProfileScreen(navController, profilePicUrl)

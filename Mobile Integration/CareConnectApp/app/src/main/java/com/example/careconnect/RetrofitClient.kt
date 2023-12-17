@@ -19,7 +19,7 @@ data class LoginData(val username: String, val password: String)
 data class RegistrationData(val username: String, val email: String, val password: String)
 
 object RetrofitClient {
-    private const val BASE_URL = "http://13.51.157.194:5000"
+    private const val BASE_URL = "http://carersconnect.net:5000"
 
     val instance: ApiService by lazy {
         Retrofit.Builder()

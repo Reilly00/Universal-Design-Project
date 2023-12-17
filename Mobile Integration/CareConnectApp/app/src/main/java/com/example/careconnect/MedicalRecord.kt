@@ -107,4 +107,3 @@ fun MedicalRecord(record: RecordModel, navController: NavController, userViewMod
         navController?.let { BottomNavigationBar(it, userViewModel) }
     }
 }
-

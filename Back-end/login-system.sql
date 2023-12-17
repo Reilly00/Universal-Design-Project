@@ -17,6 +17,12 @@ CREATE TABLE user_details (
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
+CREATE TABLE IF NOT EXISTS cards (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    patient_id TEXT NOT NULL,
+    medical_data TEXT NOT NULL
+);
+
 INSERT INTO users (username, email, password_hash) VALUES ('testuser', 'testuser@example.com', 'testpassword');
 
 ALTER TABLE users ADD COLUMN profile_pic_url VARCHAR(255);
