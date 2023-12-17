@@ -28,6 +28,10 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(navController: NavController? = null, userViewModel: UserViewModel) {
+ functionality-user
+
+
+ main
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var loginStatus by remember { mutableStateOf(LoginStatus.NONE) }
@@ -123,3 +127,4 @@ fun LoginScreen(navController: NavController? = null, userViewModel: UserViewMod
 enum class LoginStatus {
     NONE, SUCCESS, ERROR
 }
+

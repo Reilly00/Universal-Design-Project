@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -35,24 +36,28 @@ import androidx.navigation.NavController
 
 @Composable
 fun DashboardScreen(navController: NavController? = null, userViewModel: UserViewModel) {
+functionality-user
+        Column(
+
     Column(
+ main
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 32.dp, start = 16.dp, end = 16.dp)
+            .padding(top = 15.dp, start = 16.dp, end = 16.dp)
     ) {
         Text(
             text = "Dashboard",
             color = Color(0xFF00008B),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 35.dp),
+                .padding(bottom = 17.dp),
             style = MaterialTheme.typography.titleLarge
                 .copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),
             textAlign = TextAlign.Center
         )
 
         LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(20.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(getDashboardItems().chunked(2)) { rowItems ->
                 TwoItemRow(rowItems, navController)
@@ -82,8 +87,9 @@ fun TwoItemRow(items: List<DashboardItemModel>, navController: NavController?) {
 fun DashboardItem(item: DashboardItemModel, navController: NavController?) {
     Card(
         modifier = Modifier
-            .width(152.dp)
-            .height(152.dp)
+            .width(140.dp)
+            //.fillMaxWidth()
+            .height(130.dp)
             .clickable {
                 if (item.title == "Patients") {
                     navController?.navigate("patientsList")
@@ -137,7 +143,7 @@ fun DashboardItem(item: DashboardItemModel, navController: NavController?) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp),
+                    .padding(5.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -146,16 +152,16 @@ fun DashboardItem(item: DashboardItemModel, navController: NavController?) {
                     contentDescription = null,
                     modifier = Modifier
                         .size(80.dp)
+                        .aspectRatio(1f)
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = item.title,
                     color = Color(0xFF00008B),
                     // color = MaterialTheme.colorScheme.secondary,
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold
-                    ), modifier = Modifier
-                        .wrapContentSize()
+                    ), modifier = Modifier.wrapContentSize()
                 )
             }
         }
