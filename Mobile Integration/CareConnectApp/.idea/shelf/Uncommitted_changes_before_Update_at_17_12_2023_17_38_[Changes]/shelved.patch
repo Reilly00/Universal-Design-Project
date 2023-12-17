@@ -1,0 +1,896 @@
+Index: app/src/main/java/com/example/careconnect/ScanDetailsScreen.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.careconnect\r\n\r\nimport android.Manifest\r\nimport android.content.Context\r\nimport android.content.pm.PackageManager\r\nimport androidx.activity.ComponentActivity\r\nimport androidx.camera.core.CameraSelector\r\nimport androidx.camera.core.Preview\r\nimport androidx.camera.lifecycle.ProcessCameraProvider\r\nimport androidx.camera.view.PreviewView\r\nimport androidx.compose.foundation.layout.fillMaxSize\r\nimport androidx.compose.material3.MaterialTheme\r\nimport androidx.compose.material3.Surface\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.platform.LocalContext\r\nimport androidx.compose.ui.platform.LocalLifecycleOwner\r\nimport androidx.compose.ui.viewinterop.AndroidView\r\nimport androidx.core.app.ActivityCompat\r\nimport androidx.core.content.ContextCompat\r\nimport androidx.lifecycle.LifecycleOwner\r\nimport androidx.navigation.NavController\r\n\r\n@Composable\r\nfun ScanDetailsScreen(navController: NavController? = null) {\r\n    val context = LocalContext.current\r\n    val lifecycleOwner = LocalLifecycleOwner.current\r\n\r\n    // Check and request camera permission\r\n    if (ContextCompat.checkSelfPermission(\r\n            context,\r\n            Manifest.permission.CAMERA\r\n        ) == PackageManager.PERMISSION_DENIED\r\n    ) {\r\n        ActivityCompat.requestPermissions(\r\n            context as ComponentActivity,\r\n            arrayOf(Manifest.permission.CAMERA),\r\n            CAMERA_PERMISSION_REQUEST_CODE\r\n        )\r\n    } else {\r\n        initializeCamera(context, lifecycleOwner)\r\n    }\r\n\r\n    MaterialTheme {\r\n        Surface(\r\n            modifier = Modifier.fillMaxSize(),\r\n            color = MaterialTheme.colorScheme.background\r\n        ) {\r\n\r\n            CameraPreview(lifecycleOwner = lifecycleOwner)\r\n        }\r\n    }\r\n}\r\n\r\nprivate fun initializeCamera(context: Context, lifecycleOwner: LifecycleOwner) {\r\n    val cameraProviderFuture = ProcessCameraProvider.getInstance(context)\r\n\r\n    // Initialize camera\r\n    // ...\r\n}\r\n\r\n@Composable\r\nfun CameraPreview(\r\n    modifier: Modifier = Modifier,\r\n    lifecycleOwner: LifecycleOwner\r\n) {\r\n    val context = LocalContext.current\r\n    val cameraProviderFuture = ProcessCameraProvider.getInstance(context)\r\n\r\n    AndroidView(\r\n        factory = { context ->\r\n            val cameraProvider = cameraProviderFuture.get()\r\n            val preview = Preview.Builder().build()\r\n\r\n            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA\r\n\r\n            cameraProvider.bindToLifecycle(\r\n                lifecycleOwner,\r\n                cameraSelector,\r\n                preview\r\n            )\r\n\r\n            val cameraView = PreviewView(context)\r\n            preview.setSurfaceProvider(cameraView.surfaceProvider)\r\n            cameraView\r\n        },\r\n        modifier = modifier\r\n    )\r\n}\r\n\r\nprivate const val CAMERA_PERMISSION_REQUEST_CODE = 123\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/careconnect/ScanDetailsScreen.kt b/app/src/main/java/com/example/careconnect/ScanDetailsScreen.kt
+--- a/app/src/main/java/com/example/careconnect/ScanDetailsScreen.kt	(revision 630cc64f5e2a0143d62f8342cefb9d6246fe317e)
++++ b/app/src/main/java/com/example/careconnect/ScanDetailsScreen.kt	(date 1702830578127)
+@@ -3,30 +3,59 @@
+ import android.Manifest
+ import android.content.Context
+ import android.content.pm.PackageManager
++import android.graphics.Rect
++import android.util.Log
++import android.util.Size
++import android.view.ViewGroup
+ import androidx.activity.ComponentActivity
+-import androidx.camera.core.CameraSelector
+-import androidx.camera.core.Preview
++import androidx.annotation.OptIn
++import androidx.camera.core.*
+ import androidx.camera.lifecycle.ProcessCameraProvider
+ import androidx.camera.view.PreviewView
++import androidx.compose.foundation.background
++import androidx.compose.foundation.border
++import androidx.compose.foundation.layout.Arrangement
++import androidx.compose.foundation.layout.Box
++import androidx.compose.foundation.layout.Column
++import androidx.compose.foundation.layout.Spacer
++import androidx.compose.foundation.layout.aspectRatio
+ import androidx.compose.foundation.layout.fillMaxSize
++import androidx.compose.foundation.layout.padding
++import androidx.compose.foundation.shape.RoundedCornerShape
+ import androidx.compose.material3.MaterialTheme
+ import androidx.compose.material3.Surface
++import androidx.compose.material3.Text
+ import androidx.compose.runtime.Composable
++import androidx.compose.runtime.MutableState
++import androidx.compose.runtime.mutableStateOf
++import androidx.compose.runtime.remember
++import androidx.compose.ui.Alignment
+ import androidx.compose.ui.Modifier
++import androidx.compose.ui.graphics.Color
++import androidx.compose.ui.graphics.graphicsLayer
+ import androidx.compose.ui.platform.LocalContext
+ import androidx.compose.ui.platform.LocalLifecycleOwner
++import androidx.compose.ui.unit.dp
+ import androidx.compose.ui.viewinterop.AndroidView
+ import androidx.core.app.ActivityCompat
+ import androidx.core.content.ContextCompat
+ import androidx.lifecycle.LifecycleOwner
+ import androidx.navigation.NavController
+-
++import com.google.common.util.concurrent.ListenableFuture
++import com.google.mlkit.vision.barcode.BarcodeScannerOptions
++import com.google.mlkit.vision.barcode.BarcodeScanning
++import com.google.mlkit.vision.barcode.common.Barcode
++import com.google.mlkit.vision.common.InputImage
+ @Composable
+-fun ScanDetailsScreen(navController: NavController? = null) {
++fun ScanDetailsScreen(navController: NavController? = null, ) {
+     val context = LocalContext.current
+     val lifecycleOwner = LocalLifecycleOwner.current
+-
+-    // Check and request camera permission
++    val cameraView = remember { PreviewView(context) }
++    val boundingBox = remember { mutableStateOf<Rect?>(null) }
++    val scannedMessage = remember { mutableStateOf<String?>(null) }
++    val barcodeScanner = remember {
++        BarcodeScanner(context, lifecycleOwner, cameraView, boundingBox, scannedMessage, navController)
++    }
+     if (ContextCompat.checkSelfPermission(
+             context,
+             Manifest.permission.CAMERA
+@@ -38,54 +67,231 @@
+             CAMERA_PERMISSION_REQUEST_CODE
+         )
+     } else {
+-        initializeCamera(context, lifecycleOwner)
+-    }
+-
+-    MaterialTheme {
+-        Surface(
+-            modifier = Modifier.fillMaxSize(),
+-            color = MaterialTheme.colorScheme.background
+-        ) {
+-
+-            CameraPreview(lifecycleOwner = lifecycleOwner)
+-        }
+-    }
+-}
+-
+-private fun initializeCamera(context: Context, lifecycleOwner: LifecycleOwner) {
+-    val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+-
+-    // Initialize camera
+-    // ...
++        MaterialTheme {
++            Surface(
++                modifier = Modifier.fillMaxSize(),
++                color = MaterialTheme.colorScheme.background
++            ) {
++                Column(
++                    modifier = Modifier.fillMaxSize(),
++                    verticalArrangement = Arrangement.Center,
++                    horizontalAlignment = Alignment.CenterHorizontally
++                ) {
++                    // Display the QR code
++                    CameraPreview(lifecycleOwner = lifecycleOwner, scannedMessage = scannedMessage)
++                    Spacer(modifier = Modifier.weight(2f))
++                    // Display the scanned message at the bottom
++                    DisplayScannedMessage(scannedMessage = scannedMessage.value)
++                }
++            }
++        }
++    }
+ }
+ 
+ @Composable
+-fun CameraPreview(
+-    modifier: Modifier = Modifier,
+-    lifecycleOwner: LifecycleOwner
+-) {
++fun CameraPreview(lifecycleOwner: LifecycleOwner, scannedMessage: MutableState<String?>) {
+     val context = LocalContext.current
+-    val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
++    val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
++    val cameraView = remember { PreviewView(context) }
++    val boundingBox = remember { mutableStateOf<Rect?>(null) }
++
++    if (ContextCompat.checkSelfPermission(
++            context,
++            Manifest.permission.CAMERA
++        ) == PackageManager.PERMISSION_DENIED
++    ) {
++        ActivityCompat.requestPermissions(
++            context as ComponentActivity,
++            arrayOf(Manifest.permission.CAMERA),
++            CAMERA_PERMISSION_REQUEST_CODE
++        )
++    } else {
++        val barcodeScanner = remember {
++            BarcodeScanner(context, lifecycleOwner, cameraView, boundingBox, scannedMessage)
++        }
+ 
++        Box(
++            modifier = Modifier.fillMaxSize(),
++            contentAlignment = Alignment.Center
++        ) {
++            CameraPreviewContent(
++                cameraProviderFuture = cameraProviderFuture,
++                context = context,
++                lifecycleOwner = lifecycleOwner,
++                cameraView = cameraView,
++                boundingBox = boundingBox,
++                barcodeScanner = barcodeScanner
++            )
++            BarcodeBoundingBox(boundingBox = boundingBox.value)
++        }
++    }
++}
++
++@Composable
++private fun CameraPreviewContent(
++    cameraProviderFuture: ListenableFuture<ProcessCameraProvider>,
++    context: Context,
++    lifecycleOwner: LifecycleOwner,
++    cameraView: PreviewView,
++    boundingBox: MutableState<Rect?>,
++    barcodeScanner: BarcodeScanner
++) {
+     AndroidView(
+         factory = { context ->
+-            val cameraProvider = cameraProviderFuture.get()
+-            val preview = Preview.Builder().build()
++            cameraView.layoutParams = ViewGroup.LayoutParams(
++                ViewGroup.LayoutParams.MATCH_PARENT,
++                ViewGroup.LayoutParams.MATCH_PARENT
++            )
++            cameraView
++        },
++        update = { view ->
++
++            cameraProviderFuture.addListener({
++                try {
++                    val cameraProvider = cameraProviderFuture.get()
+ 
+-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
++                    val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
++                    val preview = Preview.Builder()
++                        .setTargetResolution(Size(640, 500))
++                        .setTargetRotation(view.display.rotation)
++                        .build()
++                    preview.setSurfaceProvider(view.surfaceProvider)
++
++                    val imageAnalysis = ImageAnalysis.Builder()
++                        .setTargetResolution(Size(640, 500))
++                        .setTargetRotation(view.display.rotation)
++                        .build()
++                        .also {
++                            it.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
++                                barcodeScanner.processImage(imageProxy)
++                            }
++                        }
++
++                    val camera = cameraProvider.bindToLifecycle(
++                        lifecycleOwner, cameraSelector, preview, imageAnalysis
++                    )
+ 
+-            cameraProvider.bindToLifecycle(
+-                lifecycleOwner,
+-                cameraSelector,
+-                preview
+-            )
++                    barcodeScanner.startScanning()
++
++                } catch (e: Exception) {
++                    Log.e("CameraPreview", "Error initializing camera: ${e.message}")
++                }
++            }, ContextCompat.getMainExecutor(context))
++        }
++    )
++}
+ 
+-            val cameraView = PreviewView(context)
+-            preview.setSurfaceProvider(cameraView.surfaceProvider)
+-            cameraView
+-        },
++
++@Composable
++fun BarcodeBoundingBox(boundingBox: Rect?) {
++    if (boundingBox != null) {
++        DrawBox(
++            modifier = Modifier
++                .fillMaxSize()
++                .graphicsLayer(
++                    translationX = (boundingBox.left + boundingBox.right) / 5f,
++                    translationY = (boundingBox.top + boundingBox.bottom) / 5f,
++                    scaleX = boundingBox.width().toFloat() / 600f,
++                    scaleY = boundingBox.height().toFloat() / 600f
++                ),
++            color = Color.Yellow
++        )
++    }
++}
++
++@Composable
++fun DrawBox(modifier: Modifier = Modifier, color: Color = Color.Yellow) {
++    Box(
+         modifier = modifier
++            .aspectRatio(1f)
++            .fillMaxSize()
++            .graphicsLayer(
++                translationX = 0.5f,
++                translationY = 0.5f,
++                scaleX = 1f,
++                scaleY = 1f
++            )
++            .border(4.dp, color = color, shape = RoundedCornerShape(4.dp))
++    )
++}
++
++@Composable
++fun DisplayScannedMessage(scannedMessage: String?) {
++    if (!scannedMessage.isNullOrBlank()) {
++        Box(
++            modifier = Modifier
++                .fillMaxSize()
++                .background(Color.Black)
++                .padding(16.dp)
++        ) {
++            Column(
++                horizontalAlignment = Alignment.CenterHorizontally,
++                verticalArrangement = Arrangement.Center,
++                modifier = Modifier.fillMaxSize()
++            ) {
++                Text(
++                    text = "Scanned QR Code: $scannedMessage",
++                    color = Color.Magenta,
++                    modifier = Modifier.padding(16.dp)
++                )
++            }
++        }
++    }
++}
++
++
++@OptIn(ExperimentalGetImage::class)
++class BarcodeScanner(
++    private val context: Context,
++    private val lifecycleOwner: LifecycleOwner,
++    private val cameraView: PreviewView,
++    private val boundingBox: MutableState<Rect?>,
++    private val scannedMessage: MutableState<String?>,
++    private val navController: NavController? = null
++) {
++    private val scanner = BarcodeScanning.getClient(
++        BarcodeScannerOptions.Builder()
++            .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
++            .build()
+     )
++
++    fun startScanning() {
++        Log.d("BarcodeScanner", "startScanning called")
++    }
++
++    fun processImage(imageProxy: ImageProxy) {
++        val mediaImage = imageProxy.image
++        if (mediaImage != null) {
++            val inputImage = InputImage.fromMediaImage(
++                mediaImage,
++                imageProxy.imageInfo.rotationDegrees
++            )
++
++            scanner.process(inputImage)
++                .addOnSuccessListener { barcodes ->
++                    for (barcode in barcodes) {
++                        val value = barcode.displayValue
++                        Log.d("BarcodeScanner", "QR Code Value: $value")
++                        boundingBox.value = barcode.boundingBox
++
++                        // Set the scanned message
++                        scannedMessage.value = value
++
++                        if (!value.isNullOrBlank()) {
++                            navController?.navigate("patientsList/$value")
++                        }
++
++                    }
++                }
++                .addOnFailureListener { e ->
++                    e.printStackTrace()
++                }
++                .addOnCompleteListener {
++                    imageProxy.close()
++                }
++        }
++    }
++
+ }
+ 
+ private const val CAMERA_PERMISSION_REQUEST_CODE = 123
+Index: app/src/main/java/com/example/careconnect/PatientsListScreen.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.careconnect\r\n\r\nimport androidx.compose.animation.core.Animatable\r\nimport androidx.compose.animation.core.RepeatMode\r\nimport androidx.compose.animation.core.infiniteRepeatable\r\nimport androidx.compose.animation.core.tween\r\nimport androidx.compose.foundation.Image\r\nimport androidx.compose.foundation.background\r\nimport androidx.compose.foundation.layout.Box\r\nimport androidx.compose.foundation.layout.Column\r\nimport androidx.compose.foundation.layout.Spacer\r\nimport androidx.compose.foundation.layout.fillMaxSize\r\nimport androidx.compose.foundation.layout.fillMaxWidth\r\nimport androidx.compose.foundation.layout.height\r\nimport androidx.compose.foundation.layout.offset\r\nimport androidx.compose.foundation.layout.padding\r\nimport androidx.compose.foundation.layout.size\r\nimport androidx.compose.foundation.lazy.LazyColumn\r\nimport androidx.compose.foundation.lazy.items\r\nimport androidx.compose.foundation.shape.CircleShape\r\nimport androidx.compose.material.icons.Icons\r\nimport androidx.compose.material.icons.filled.ArrowBack\r\nimport androidx.compose.material3.Card\r\nimport androidx.compose.material3.ExperimentalMaterial3Api\r\nimport androidx.compose.material3.Icon\r\nimport androidx.compose.material3.IconButton\r\nimport androidx.compose.material3.MaterialTheme\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.runtime.LaunchedEffect\r\nimport androidx.compose.runtime.remember\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.draw.alpha\r\nimport androidx.compose.ui.graphics.Brush\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.res.painterResource\r\nimport androidx.compose.ui.text.font.FontWeight\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.compose.ui.unit.sp\r\nimport androidx.navigation.NavController\r\n\r\n\r\n@Composable\r\nfun PatientsListScreen(navController: NavController? = null) {\r\n    val lightPinkColor = Color(0xFFF5F1F2)\r\n    val strongerPinkColor = Color(0xFF947B83)\r\n\r\n    // Sample patient data\r\n    val patients = listOf(\r\n        PatientModel(\"Patient 1\", \"Margret Cole\", \"Diagnosis 1\"),\r\n        PatientModel(\"Patient 2\", \"Ben Martin\", \"Diagnosis 2\"),\r\n        PatientModel(\"Patient 3\", \"Bridget Kenna\", \"Diagnosis 3\"),\r\n    )\r\n\r\n    Column(\r\n        modifier = Modifier\r\n            .fillMaxSize()\r\n            .background(\r\n                brush = Brush.verticalGradient(\r\n                    colors = listOf(lightPinkColor, strongerPinkColor),\r\n                    startY = -1.5f,\r\n                    endY = 2800f\r\n                )\r\n            )\r\n    ) {\r\n        Box(\r\n            modifier = Modifier\r\n                .fillMaxWidth()\r\n                .padding(16.dp)\r\n                .background(\r\n                    color = Color.Transparent,\r\n                    shape = CircleShape\r\n                )\r\n        ) {\r\n            IconButton(\r\n                onClick = {\r\n                    navController?.popBackStack()\r\n                },\r\n                modifier = Modifier\r\n                    .background(\r\n                        color = Color(0xFFBB99A5),\r\n                        shape = CircleShape\r\n                    )\r\n            ) {\r\n                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = \"Back\", tint = Color.White)\r\n            }\r\n            Text(\r\n                text = \"Patients\",\r\n                style = MaterialTheme.typography.titleLarge\r\n                    .copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),\r\n                color = Color(0xFF00008B),  // Specify color here\r\n                modifier = Modifier\r\n                    .fillMaxWidth()\r\n                    .padding(start = 130.dp)\r\n            )\r\n        }\r\n\r\n        Spacer(modifier = Modifier.height(16.dp))\r\n\r\n        // Content\r\n        LazyColumn {\r\n            items(patients) { patient ->\r\n                if (navController != null) {\r\n                    PatientListItem(patient, navController)\r\n                }\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n\r\n@OptIn(ExperimentalMaterial3Api::class)\r\n@Composable\r\nfun PatientListItem(patient: PatientModel, navController: NavController) {\r\n\r\n    val starAlpha = remember { Animatable(0f) }\r\n\r\n    LaunchedEffect(starAlpha) {\r\n        starAlpha.animateTo(\r\n            targetValue = 1f,\r\n            animationSpec = infiniteRepeatable(\r\n                animation = tween(durationMillis = 500),\r\n                repeatMode = RepeatMode.Reverse\r\n            )\r\n        )\r\n    }\r\n\r\n    Card(\r\n        modifier = Modifier\r\n            .fillMaxWidth()\r\n            .padding(8.dp),\r\n        shape = MaterialTheme.shapes.medium,\r\n        onClick = {\r\n            navController.navigate(\"patientDetails/${patient.name}\")\r\n        }\r\n    ) {\r\n        Box(\r\n            modifier = Modifier\r\n                .fillMaxWidth()\r\n                .background(color = Color(0xFFBB99A5), shape = MaterialTheme.shapes.medium),\r\n        ) {\r\n            Image(\r\n                painter = painterResource(id = R.drawable.heart),\r\n                contentDescription = null,\r\n                modifier = Modifier\r\n                    .size(60.dp)\r\n                    .offset(280.dp, 20.dp)\r\n                    .alpha(starAlpha.value)\r\n            )\r\n            Column(\r\n                modifier = Modifier\r\n                    .fillMaxWidth()\r\n                    .padding(start = 20.dp, top = 20.dp, bottom = 20.dp)\r\n            ) {\r\n                Text(\r\n                    text = patient.number,\r\n                    color = Color(0xFF00008B),\r\n                    style = MaterialTheme.typography.titleMedium,\r\n                    modifier = Modifier.padding(bottom = 4.dp),\r\n                )\r\n                Text(\r\n                    text = patient.name,\r\n                    style = MaterialTheme.typography.titleLarge,\r\n                    modifier = Modifier.padding(bottom = 4.dp),\r\n                )\r\n                Text(\r\n                    text = patient.diagnosis,\r\n                    style = MaterialTheme.typography.titleMedium,\r\n                    modifier = Modifier.padding(bottom = 4.dp),\r\n                )\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n// Data model for the patients\r\ndata class PatientModel(val number: String, val name: String, val diagnosis: String)
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/careconnect/PatientsListScreen.kt b/app/src/main/java/com/example/careconnect/PatientsListScreen.kt
+--- a/app/src/main/java/com/example/careconnect/PatientsListScreen.kt	(revision 630cc64f5e2a0143d62f8342cefb9d6246fe317e)
++++ b/app/src/main/java/com/example/careconnect/PatientsListScreen.kt	(date 1702830578116)
+@@ -1,3 +1,183 @@
++//package com.example.careconnect
++//
++//import androidx.compose.animation.core.Animatable
++//import androidx.compose.animation.core.RepeatMode
++//import androidx.compose.animation.core.infiniteRepeatable
++//import androidx.compose.animation.core.tween
++//import androidx.compose.foundation.Image
++//import androidx.compose.foundation.background
++//import androidx.compose.foundation.layout.Box
++//import androidx.compose.foundation.layout.Column
++//import androidx.compose.foundation.layout.Spacer
++//import androidx.compose.foundation.layout.fillMaxSize
++//import androidx.compose.foundation.layout.fillMaxWidth
++//import androidx.compose.foundation.layout.height
++//import androidx.compose.foundation.layout.offset
++//import androidx.compose.foundation.layout.padding
++//import androidx.compose.foundation.layout.size
++//import androidx.compose.foundation.lazy.LazyColumn
++//import androidx.compose.foundation.lazy.items
++//import androidx.compose.foundation.shape.CircleShape
++//import androidx.compose.material.icons.Icons
++//import androidx.compose.material.icons.filled.ArrowBack
++//import androidx.compose.material3.Card
++//import androidx.compose.material3.ExperimentalMaterial3Api
++//import androidx.compose.material3.Icon
++//import androidx.compose.material3.IconButton
++//import androidx.compose.material3.MaterialTheme
++//import androidx.compose.material3.Text
++//import androidx.compose.runtime.Composable
++//import androidx.compose.runtime.LaunchedEffect
++//import androidx.compose.runtime.remember
++//import androidx.compose.ui.Modifier
++//import androidx.compose.ui.draw.alpha
++//import androidx.compose.ui.graphics.Brush
++//import androidx.compose.ui.graphics.Color
++//import androidx.compose.ui.res.painterResource
++//import androidx.compose.ui.text.font.FontWeight
++//import androidx.compose.ui.unit.dp
++//import androidx.compose.ui.unit.sp
++//import androidx.navigation.NavController
++//
++//
++//@Composable
++//fun PatientsListScreen(navController: NavController? = null) {
++//    val lightPinkColor = Color(0xFFF5F1F2)
++//    val strongerPinkColor = Color(0xFF947B83)
++//
++//    // Sample patient data
++//    val patients = listOf(
++//        PatientModel("Patient 1", "Margret Cole", "Diagnosis 1"),
++//        PatientModel("Patient 2", "Ben Martin", "Diagnosis 2"),
++//        PatientModel("Patient 3", "Bridget Kenna", "Diagnosis 3"),
++//    )
++//
++//    Column(
++//        modifier = Modifier
++//            .fillMaxSize()
++//            .background(
++//                brush = Brush.verticalGradient(
++//                    colors = listOf(lightPinkColor, strongerPinkColor),
++//                    startY = -1.5f,
++//                    endY = 2800f
++//                )
++//            )
++//    ) {
++//        Box(
++//            modifier = Modifier
++//                .fillMaxWidth()
++//                .padding(16.dp)
++//                .background(
++//                    color = Color.Transparent,
++//                    shape = CircleShape
++//                )
++//        ) {
++//            IconButton(
++//                onClick = {
++//                    navController?.popBackStack()
++//                },
++//                modifier = Modifier
++//                    .background(
++//                        color = Color(0xFFBB99A5),
++//                        shape = CircleShape
++//                    )
++//            ) {
++//                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
++//            }
++//            Text(
++//                text = "Patients",
++//                style = MaterialTheme.typography.titleLarge
++//                    .copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),
++//                color = Color(0xFF00008B),  // Specify color here
++//                modifier = Modifier
++//                    .fillMaxWidth()
++//                    .padding(start = 130.dp)
++//            )
++//        }
++//
++//        Spacer(modifier = Modifier.height(16.dp))
++//
++//        // Content
++//        LazyColumn {
++//            items(patients) { patient ->
++//                if (navController != null) {
++//                    PatientListItem(patient, navController)
++//                }
++//            }
++//        }
++//    }
++//}
++//
++//
++//@OptIn(ExperimentalMaterial3Api::class)
++//@Composable
++//fun PatientListItem(patient: PatientModel, navController: NavController) {
++//
++//    val starAlpha = remember { Animatable(0f) }
++//
++//    LaunchedEffect(starAlpha) {
++//        starAlpha.animateTo(
++//            targetValue = 1f,
++//            animationSpec = infiniteRepeatable(
++//                animation = tween(durationMillis = 500),
++//                repeatMode = RepeatMode.Reverse
++//            )
++//        )
++//    }
++//
++//    Card(
++//        modifier = Modifier
++//            .fillMaxWidth()
++//            .padding(8.dp),
++//        shape = MaterialTheme.shapes.medium,
++//        onClick = {
++//            navController.navigate("patientDetails/${patient.name}")
++//        }
++//    ) {
++//        Box(
++//            modifier = Modifier
++//                .fillMaxWidth()
++//                .background(color = Color(0xFFBB99A5), shape = MaterialTheme.shapes.medium),
++//        ) {
++//            Image(
++//                painter = painterResource(id = R.drawable.heart),
++//                contentDescription = null,
++//                modifier = Modifier
++//                    .size(60.dp)
++//                    .offset(280.dp, 20.dp)
++//                    .alpha(starAlpha.value)
++//            )
++//            Column(
++//                modifier = Modifier
++//                    .fillMaxWidth()
++//                    .padding(start = 20.dp, top = 20.dp, bottom = 20.dp)
++//            ) {
++//                Text(
++//                    text = patient.number,
++//                    color = Color(0xFF00008B),
++//                    style = MaterialTheme.typography.titleMedium,
++//                    modifier = Modifier.padding(bottom = 4.dp),
++//                )
++//                Text(
++//                    text = patient.name,
++//                    style = MaterialTheme.typography.titleLarge,
++//                    modifier = Modifier.padding(bottom = 4.dp),
++//                )
++//                Text(
++//                    text = patient.diagnosis,
++//                    style = MaterialTheme.typography.titleMedium,
++//                    modifier = Modifier.padding(bottom = 4.dp),
++//                )
++//            }
++//        }
++//    }
++//}
++//
++//// Data model for the patients
++//data class PatientModel(val number: String, val name: String, val diagnosis: String)
++
++
++
+ package com.example.careconnect
+ 
+ import androidx.compose.animation.core.Animatable
+@@ -39,18 +219,19 @@
+ import androidx.compose.ui.unit.sp
+ import androidx.navigation.NavController
+ 
+-
+ @Composable
+-fun PatientsListScreen(navController: NavController? = null) {
++fun PatientsListScreen(navController: NavController? = null, qrCodeContent: String? = null) {
+     val lightPinkColor = Color(0xFFF5F1F2)
+     val strongerPinkColor = Color(0xFF947B83)
+ 
+-    // Sample patient data
+-    val patients = listOf(
+-        PatientModel("Patient 1", "Margret Cole", "Diagnosis 1"),
+-        PatientModel("Patient 2", "Ben Martin", "Diagnosis 2"),
+-        PatientModel("Patient 3", "Bridget Kenna", "Diagnosis 3"),
+-    )
++    // Use the QR code content to create a PatientModel
++    val patient = if (qrCodeContent != null) {
++        createPatientModelFromQRCode(qrCodeContent)
++    } else {
++
++        //PatientModel("Patient 2", "Ben Martin", "Diagnosis 2")
++        PatientModel("Patient 3", "Bridget Kenna", "Diagnosis 3")
++    }
+ 
+     Column(
+         modifier = Modifier
+@@ -88,7 +269,7 @@
+                 text = "Patients",
+                 style = MaterialTheme.typography.titleLarge
+                     .copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),
+-                color = Color(0xFF00008B),  // Specify color here
++                color = Color(0xFF00008B),
+                 modifier = Modifier
+                     .fillMaxWidth()
+                     .padding(start = 130.dp)
+@@ -99,15 +280,14 @@
+ 
+         // Content
+         LazyColumn {
+-            items(patients) { patient ->
++            items(listOf(patient)) { patientItem ->
+                 if (navController != null) {
+-                    PatientListItem(patient, navController)
++                    PatientListItem(patientItem, navController)
+                 }
+             }
+         }
+     }
+ }
+-
+ 
+ @OptIn(ExperimentalMaterial3Api::class)
+ @Composable
+@@ -153,7 +333,7 @@
+                     .padding(start = 20.dp, top = 20.dp, bottom = 20.dp)
+             ) {
+                 Text(
+-                    text = patient.number,
++                    text = patient.patientId,
+                     color = Color(0xFF00008B),
+                     style = MaterialTheme.typography.titleMedium,
+                     modifier = Modifier.padding(bottom = 4.dp),
+@@ -173,5 +353,16 @@
+     }
+ }
+ 
++
++fun createPatientModelFromQRCode(qrCodeContent: String): PatientModel {
++    val id = qrCodeContent
++    val patientId = "Patient $id"
++    val name = "Patient Name $id"
++    val diagnosis = "Diagnosis $id"
++
++    return PatientModel( patientId, name, diagnosis)
++}
++
+ // Data model for the patients
+-data class PatientModel(val number: String, val name: String, val diagnosis: String)
+\ No newline at end of file
++data class PatientModel( val patientId: String, val name: String, val diagnosis: String)
++
+Index: .idea/ChatGPTCopilotChannelManager.xml
+===================================================================
+diff --git a/.idea/ChatGPTCopilotChannelManager.xml b/.idea/ChatGPTCopilotChannelManager.xml
+deleted file mode 100644
+--- a/.idea/ChatGPTCopilotChannelManager.xml	(revision 630cc64f5e2a0143d62f8342cefb9d6246fe317e)
++++ /dev/null	(revision 630cc64f5e2a0143d62f8342cefb9d6246fe317e)
+@@ -1,10 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="ChatGPTCopilotChannelManager">
+-    <chatChannels>
+-      <chatChannel>
+-        <option name="messages" />
+-      </chatChannel>
+-    </chatChannels>
+-  </component>
+-</project>
+\ No newline at end of file
+Index: .idea/.gitignore
+===================================================================
+diff --git a/.idea/.gitignore b/.idea/.gitignore
+deleted file mode 100644
+--- a/.idea/.gitignore	(revision 630cc64f5e2a0143d62f8342cefb9d6246fe317e)
++++ /dev/null	(revision 630cc64f5e2a0143d62f8342cefb9d6246fe317e)
+@@ -1,3 +0,0 @@
+-# Default ignored files
+-/shelf/
+-/workspace.xml
+Index: app/src/main/java/com/example/careconnect/NotificationsScreen.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.careconnect\r\n\r\nimport UserViewModel\r\nimport androidx.compose.foundation.background\r\nimport androidx.compose.foundation.layout.Column\r\nimport androidx.compose.foundation.layout.Spacer\r\nimport androidx.compose.foundation.layout.fillMaxSize\r\nimport androidx.compose.foundation.layout.fillMaxWidth\r\nimport androidx.compose.foundation.layout.height\r\nimport androidx.compose.foundation.layout.padding\r\nimport androidx.compose.foundation.lazy.LazyColumn\r\nimport androidx.compose.foundation.lazy.items\r\nimport androidx.compose.material.*\r\nimport androidx.compose.material3.Card\r\nimport androidx.compose.material3.ExperimentalMaterial3Api\r\nimport androidx.compose.material3.MaterialTheme\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.graphics.Brush\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.text.font.FontWeight\r\nimport androidx.compose.ui.text.style.TextAlign\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.compose.ui.unit.sp\r\nimport androidx.navigation.NavController\r\n@Composable\r\nfun NotificationsScreen(navController: NavController, userViewModel: UserViewModel) {\r\n    val lightPinkColor = Color(0xFFF5F1F2)\r\n    val strongerPinkColor = Color(0xFF947B83)\r\n\r\n    Column(\r\n        modifier = Modifier\r\n            .fillMaxSize()\r\n            .background(\r\n                brush = Brush.verticalGradient(\r\n                    colors = listOf(lightPinkColor, strongerPinkColor),\r\n                    startY = -1.5f,\r\n                    endY = 2800f\r\n                )\r\n            )\r\n    ) {\r\n        Spacer(modifier = Modifier.height(16.dp))\r\n\r\n        Text(\r\n            text = \"Notifications\",\r\n            color = Color(0xFF00008B),\r\n            modifier = Modifier\r\n                .fillMaxWidth()\r\n                .padding(bottom = 40.dp),\r\n            style = MaterialTheme.typography.titleLarge\r\n                .copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),\r\n            textAlign = TextAlign.Center\r\n        )\r\n\r\n        // Content\r\n        NotificationsContent()\r\n        navController?.let { BottomNavigationBar(it, userViewModel) }\r\n    }\r\n}\r\n\r\n\r\n@Composable\r\nfun NotificationsContent() {\r\n    LazyColumn {\r\n        items(getNotificationItems()) { notificationItem ->\r\n            NotificationItem(notificationItem)\r\n        }\r\n    }\r\n}\r\n\r\n@OptIn(ExperimentalMaterial3Api::class)\r\n@Composable\r\nfun NotificationItem(item: NotificationItemModel) {\r\n    Card(\r\n        modifier = Modifier\r\n            .fillMaxWidth()\r\n            .padding(10.dp),\r\n        onClick = { /* Handle item click here */ }\r\n    ) {\r\n        Column(\r\n            modifier = Modifier\r\n                .fillMaxWidth()\r\n                .background(color = Color(0xFFBB99A5), shape = MaterialTheme.shapes.medium)\r\n                .padding(2.dp)\r\n        ) {\r\n            Text(\r\n                text = item.title,\r\n               // color = Color.White,\r\n                color = Color(0xFF00008B),\r\n                style = MaterialTheme.typography.titleMedium,\r\n                modifier = Modifier\r\n                    .padding(bottom = 8.dp)\r\n                    .padding(start = 16.dp),\r\n            )\r\n\r\n            Text(\r\n                text = item.content,\r\n                style = MaterialTheme.typography.titleLarge,\r\n                modifier = Modifier\r\n                    .padding(bottom = 8.dp)\r\n                    .padding(start = 16.dp)\r\n            )\r\n        }\r\n    }\r\n}\r\n\r\ndata class NotificationItemModel(val title: String, val content: String)\r\n\r\nfun getNotificationItems(): List<NotificationItemModel> {\r\n    return listOf(\r\n        NotificationItemModel(\"Appointment Reminder\", \"Don't forget your appointment.\"),\r\n        NotificationItemModel(\"Task Completed\", \"Task assigned to you has been completed.\"),\r\n        NotificationItemModel(\"Appointment Confirmation\", \"Your appointment is confirmed.\"),\r\n        NotificationItemModel(\"Appointment Update\", \"Update on your upcoming appointment.\"),\r\n\r\n        )\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/careconnect/NotificationsScreen.kt b/app/src/main/java/com/example/careconnect/NotificationsScreen.kt
+--- a/app/src/main/java/com/example/careconnect/NotificationsScreen.kt	(revision 630cc64f5e2a0143d62f8342cefb9d6246fe317e)
++++ b/app/src/main/java/com/example/careconnect/NotificationsScreen.kt	(date 1702833222373)
+@@ -47,7 +47,7 @@
+             color = Color(0xFF00008B),
+             modifier = Modifier
+                 .fillMaxWidth()
+-                .padding(bottom = 40.dp),
++                .padding(bottom = 22.dp),
+             style = MaterialTheme.typography.titleLarge
+                 .copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),
+             textAlign = TextAlign.Center
+@@ -113,6 +113,5 @@
+         NotificationItemModel("Task Completed", "Task assigned to you has been completed."),
+         NotificationItemModel("Appointment Confirmation", "Your appointment is confirmed."),
+         NotificationItemModel("Appointment Update", "Update on your upcoming appointment."),
+-
+         )
+-}
+\ No newline at end of file
++}
+Index: app/src/main/java/com/example/careconnect/LoginScreen.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.careconnect\r\n\r\nimport UserViewModel\r\nimport android.net.Uri\r\nimport androidx.compose.foundation.Image\r\nimport androidx.compose.foundation.background\r\nimport androidx.compose.foundation.clickable\r\nimport androidx.compose.foundation.layout.*\r\nimport androidx.compose.foundation.layout.Arrangement\r\nimport androidx.compose.foundation.layout.Column\r\nimport androidx.compose.foundation.layout.PaddingValues\r\nimport androidx.compose.foundation.layout.Spacer\r\nimport androidx.compose.foundation.layout.fillMaxSize\r\nimport androidx.compose.foundation.layout.fillMaxWidth\r\nimport androidx.compose.foundation.layout.height\r\nimport androidx.compose.material3.*\r\nimport androidx.compose.runtime.*\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.graphics.Brush\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.res.painterResource\r\nimport androidx.compose.ui.text.input.PasswordVisualTransformation\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.navigation.NavController\r\nimport kotlinx.coroutines.launch\r\n\r\n@OptIn(ExperimentalMaterial3Api::class)\r\n@Composable\r\nfun LoginScreen(navController: NavController? = null, userViewModel: UserViewModel) {\r\n    var username by remember { mutableStateOf(\"\") }\r\n    var password by remember { mutableStateOf(\"\") }\r\n    var loginStatus by remember { mutableStateOf(LoginStatus.NONE) }\r\n    var isLoginInProgress by remember { mutableStateOf(false) }\r\n    val coroutineScope = rememberCoroutineScope()\r\n\r\n    val lightPinkColor = Color(0xFFF5F1F2)\r\n    val strongerPinkColor = Color(0xFF947B83)\r\n\r\n    Column(\r\n        modifier = Modifier\r\n            .fillMaxSize()\r\n            .background(\r\n                brush = Brush.verticalGradient(\r\n                    colors = listOf(lightPinkColor, strongerPinkColor),\r\n                    startY = -1.5f,\r\n                    endY = 2800f\r\n                )\r\n            ),\r\n        verticalArrangement = Arrangement.Center,\r\n        horizontalAlignment = Alignment.CenterHorizontally\r\n    ) {\r\n        Spacer(modifier = Modifier.weight(1f))\r\n        Image(\r\n            painter = painterResource(R.drawable.logo),\r\n            contentDescription = \"Logo\",\r\n            modifier = Modifier\r\n        )\r\n        Spacer(modifier = Modifier.height(128.dp))\r\n        OutlinedTextField(\r\n            value = username,\r\n            onValueChange = { username = it.trim() },\r\n            label = { Text(\"Email\", color = Color.Black) },\r\n            singleLine = true\r\n        )\r\n        Spacer(modifier = Modifier.height(16.dp))\r\n        OutlinedTextField(\r\n            value = password,\r\n            onValueChange = { password = it.trim() },\r\n            label = { Text(\"Password\", color = Color.Black) },\r\n            singleLine = true,\r\n            visualTransformation = PasswordVisualTransformation()\r\n        )\r\n        Spacer(modifier = Modifier.height(16.dp))\r\n        Button(\r\n            onClick = {\r\n                if (!isLoginInProgress) {\r\n                    isLoginInProgress = true\r\n                    coroutineScope.launch {\r\n                        try {\r\n                            val response = RetrofitClient.instance.loginUser(LoginData(username, password))\r\n                            if (response.isSuccessful && response.body() != null) {\r\n                                val loginResponse = response.body()!!\r\n                                userViewModel.updateProfilePicUrl(loginResponse.profile_pic_url)\r\n                                navController?.navigate(\"dashboard\")\r\n                                loginStatus = LoginStatus.SUCCESS\r\n                            } else {\r\n                                loginStatus = LoginStatus.ERROR\r\n                            }\r\n                        } catch (e: Exception) {\r\n                            e.printStackTrace()\r\n                            loginStatus = LoginStatus.ERROR\r\n                        } finally {\r\n                            isLoginInProgress = false\r\n                        }\r\n                    }\r\n                }\r\n            },\r\n            enabled = !isLoginInProgress,\r\n            shape = MaterialTheme.shapes.medium,\r\n            modifier = Modifier.fillMaxWidth(fraction = 0.5f),\r\n            contentPadding = PaddingValues(16.dp)\r\n        ) {\r\n            Text(text = \"Login\")\r\n        }\r\n\r\n        when (loginStatus) {\r\n            LoginStatus.SUCCESS -> Text(\"Login successful\")\r\n            LoginStatus.ERROR -> Text(\"Login failed\", color = Color.Red)\r\n            else -> {} // Do nothing for NONE\r\n        }\r\n\r\n        Spacer(modifier = Modifier.height(10.dp))\r\n        Text(\r\n            text = \"Don't have an account? Register here\",\r\n            color = Color.Black, // Set text color\r\n            modifier = Modifier.clickable { navController?.navigate(\"register\") }\r\n        )\r\n        Spacer(modifier = Modifier.weight(1f))\r\n    }\r\n}\r\n\r\nenum class LoginStatus {\r\n    NONE, SUCCESS, ERROR\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/careconnect/LoginScreen.kt b/app/src/main/java/com/example/careconnect/LoginScreen.kt
+--- a/app/src/main/java/com/example/careconnect/LoginScreen.kt	(revision 630cc64f5e2a0143d62f8342cefb9d6246fe317e)
++++ b/app/src/main/java/com/example/careconnect/LoginScreen.kt	(date 1702834243633)
+@@ -28,6 +28,7 @@
+ @OptIn(ExperimentalMaterial3Api::class)
+ @Composable
+ fun LoginScreen(navController: NavController? = null, userViewModel: UserViewModel) {
++
+     var username by remember { mutableStateOf("") }
+     var password by remember { mutableStateOf("") }
+     var loginStatus by remember { mutableStateOf(LoginStatus.NONE) }
+@@ -122,4 +123,5 @@
+ 
+ enum class LoginStatus {
+     NONE, SUCCESS, ERROR
+-}
+\ No newline at end of file
++}
++
+Index: app/build.gradle.kts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>plugins {\r\n    id(\"com.android.application\")\r\n    id(\"org.jetbrains.kotlin.android\")\r\n}\r\n\r\nandroid {\r\n    namespace = \"com.example.careconnect\"\r\n    compileSdk = 34\r\n\r\n    defaultConfig {\r\n        applicationId = \"com.example.careconnect\"\r\n        minSdk = 24\r\n        //noinspection EditedTargetSdkVersion\r\n        targetSdk = 34\r\n        versionCode = 1\r\n        versionName = \"1.0\"\r\n\r\n        testInstrumentationRunner = \"androidx.test.runner.AndroidJUnitRunner\"\r\n        vectorDrawables {\r\n            useSupportLibrary = true\r\n        }\r\n    }\r\n\r\n    buildTypes {\r\n        release {\r\n            isMinifyEnabled = false\r\n            proguardFiles(\r\n                getDefaultProguardFile(\"proguard-android-optimize.txt\"),\r\n                \"proguard-rules.pro\"\r\n            )\r\n        }\r\n    }\r\n    compileOptions {\r\n        sourceCompatibility = JavaVersion.VERSION_1_8\r\n        targetCompatibility = JavaVersion.VERSION_1_8\r\n    }\r\n    kotlinOptions {\r\n        jvmTarget = \"1.8\"\r\n    }\r\n    buildFeatures {\r\n        compose = true\r\n    }\r\n    composeOptions {\r\n        kotlinCompilerExtensionVersion = \"1.4.3\"\r\n    }\r\n    packaging {\r\n        resources {\r\n            excludes += \"/META-INF/{AL2.0,LGPL2.1}\"\r\n        }\r\n    }\r\n}\r\n\r\ndependencies {\r\n\r\n    implementation(\"androidx.core:core-ktx:1.9.0\")\r\n    implementation(\"androidx.lifecycle:lifecycle-runtime-ktx:2.6.2\")\r\n    implementation(\"androidx.activity:activity-compose:1.8.0\")\r\n    implementation(platform(\"androidx.compose:compose-bom:2023.03.00\"))\r\n    implementation(\"androidx.compose.ui:ui\")\r\n    implementation(\"androidx.compose.ui:ui-graphics\")\r\n    implementation(\"androidx.compose.ui:ui-tooling-preview\")\r\n    implementation(\"androidx.compose.material3:material3\")\r\n    implementation(\"androidx.navigation:navigation-compose:2.4.0-alpha10\")\r\n    implementation(\"com.squareup.retrofit2:retrofit:2.9.0\")\r\n    implementation(\"com.squareup.retrofit2:converter-gson:2.9.0\")\r\n    implementation(\"io.coil-kt:coil-compose:1.4.0\")\r\n\r\n    implementation(\"androidx.compose.ui:ui-text-android:1.5.4\")\r\n    implementation(\"androidx.camera:camera-view:1.3.0\")\r\n    testImplementation(\"junit:junit:4.13.2\")\r\n    androidTestImplementation(\"androidx.test.ext:junit:1.1.5\")\r\n    androidTestImplementation(\"androidx.test.espresso:espresso-core:3.5.1\")\r\n    androidTestImplementation(platform(\"androidx.compose:compose-bom:2023.03.00\"))\r\n    androidTestImplementation(\"androidx.compose.ui:ui-test-junit4\")\r\n    debugImplementation(\"androidx.compose.ui:ui-tooling\")\r\n    debugImplementation(\"androidx.compose.ui:ui-test-manifest\")\r\n\r\n    // implementation (\"androidx.camera:camera-camera2:1.1.0\")\r\n    implementation (\"androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07\")\r\n    implementation (\"com.google.zxing:core:3.4.1\")\r\n    implementation (\"androidx.camera:camera-extensions:1.0.0-alpha30\")\r\n    implementation (\"androidx.camera:camera-lifecycle:1.1.0\")\r\n    //implementation(\"com.journeyapps:zxing-android-embedded:4.2.0\")\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/build.gradle.kts b/app/build.gradle.kts
+--- a/app/build.gradle.kts	(revision 630cc64f5e2a0143d62f8342cefb9d6246fe317e)
++++ b/app/build.gradle.kts	(date 1702829347412)
+@@ -67,6 +67,7 @@
+ 
+     implementation("androidx.compose.ui:ui-text-android:1.5.4")
+     implementation("androidx.camera:camera-view:1.3.0")
++    implementation("com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.0")
+     testImplementation("junit:junit:4.13.2")
+     androidTestImplementation("androidx.test.ext:junit:1.1.5")
+     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+Index: app/src/main/java/com/example/careconnect/DashboardScreen.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.careconnect\r\n\r\nimport UserViewModel\r\nimport androidx.compose.foundation.Image\r\nimport androidx.compose.foundation.background\r\nimport androidx.compose.foundation.clickable\r\nimport androidx.compose.foundation.layout.Arrangement\r\nimport androidx.compose.foundation.layout.Box\r\nimport androidx.compose.foundation.layout.Column\r\nimport androidx.compose.foundation.layout.Spacer\r\nimport androidx.compose.foundation.layout.fillMaxSize\r\nimport androidx.compose.foundation.layout.fillMaxWidth\r\nimport androidx.compose.foundation.layout.height\r\nimport androidx.compose.foundation.layout.padding\r\nimport androidx.compose.foundation.layout.size\r\nimport androidx.compose.foundation.layout.width\r\nimport androidx.compose.foundation.layout.wrapContentSize\r\nimport androidx.compose.foundation.lazy.LazyColumn\r\nimport androidx.compose.foundation.lazy.LazyRow\r\nimport androidx.compose.foundation.lazy.items\r\nimport androidx.compose.material3.Card\r\nimport androidx.compose.material3.MaterialTheme\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.res.painterResource\r\nimport androidx.compose.ui.text.font.FontWeight\r\nimport androidx.compose.ui.text.style.TextAlign\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.compose.ui.unit.sp\r\nimport androidx.navigation.NavController\r\n\r\n\r\n@Composable\r\nfun DashboardScreen(navController: NavController? = null, userViewModel: UserViewModel) {\r\n    Column(\r\n        modifier = Modifier\r\n            .fillMaxSize()\r\n            .padding(top = 32.dp, start = 16.dp, end = 16.dp)\r\n    ) {\r\n        Text(\r\n            text = \"Dashboard\",\r\n            color = Color(0xFF00008B),\r\n            modifier = Modifier\r\n                .fillMaxWidth()\r\n                .padding(bottom = 35.dp),\r\n            style = MaterialTheme.typography.titleLarge\r\n                .copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),\r\n            textAlign = TextAlign.Center\r\n        )\r\n\r\n        LazyColumn(\r\n            verticalArrangement = Arrangement.spacedBy(20.dp),\r\n        ) {\r\n            items(getDashboardItems().chunked(2)) { rowItems ->\r\n                TwoItemRow(rowItems, navController)\r\n            }\r\n        }\r\n\r\n\r\n        navController?.let { BottomNavigationBar(it, userViewModel) }\r\n    }\r\n}\r\n\r\n@Composable\r\nfun TwoItemRow(items: List<DashboardItemModel>, navController: NavController?) {\r\n    LazyRow(\r\n        modifier = Modifier\r\n            .fillMaxWidth()\r\n            .padding(start = 16.dp),\r\n        horizontalArrangement = Arrangement.spacedBy(16.dp),\r\n    ) {\r\n        items(items) { dashboardItem ->\r\n            DashboardItem(dashboardItem, navController)\r\n        }\r\n    }\r\n}\r\n\r\n@Composable\r\nfun DashboardItem(item: DashboardItemModel, navController: NavController?) {\r\n    Card(\r\n        modifier = Modifier\r\n            .width(152.dp)\r\n            .height(152.dp)\r\n            .clickable {\r\n                if (item.title == \"Patients\") {\r\n                    navController?.navigate(\"patientsList\")\r\n                }\r\n\r\n                if (item.title == \"Carer's Portal\") {\r\n                    navController?.navigate(\"carersPortal\")\r\n                }\r\n\r\n                if (item.title == \"Scan Details\") {\r\n                    navController?.navigate(\"scanDetails\")\r\n                }\r\n\r\n                if (item.title == \"Email\") {\r\n                    navController?.navigate(\"emailScreen\")\r\n                }\r\n\r\n                if (item.title == \"View Records\") {\r\n                    navController?.navigate(\"viewRecords\")\r\n                }\r\n            },\r\n        shape = MaterialTheme.shapes.medium,\r\n\r\n        ) {\r\n        Box(\r\n            modifier = Modifier\r\n                .fillMaxSize()\r\n                .background(Color(0xFFBB99A5))\r\n                .clickable {\r\n                    if (item.title == \"Patients\") {\r\n                        navController?.navigate(\"patientsList\")\r\n                    }\r\n\r\n                    if (item.title == \"Carer's Portal\") {\r\n                        navController?.navigate(\"carersPortal\")\r\n                    }\r\n\r\n                    if (item.title == \"Scan Details\") {\r\n                        navController?.navigate(\"scanDetails\")\r\n                    }\r\n\r\n                    if (item.title == \"Email\") {\r\n                        navController?.navigate(\"emailScreen\")\r\n                    }\r\n\r\n                    if (item.title == \"View Records\") {\r\n                        navController?.navigate(\"viewRecords\")\r\n                    }\r\n                },\r\n        ) {\r\n            Column(\r\n                modifier = Modifier\r\n                    .fillMaxSize()\r\n                    .padding(16.dp),\r\n                verticalArrangement = Arrangement.Center,\r\n                horizontalAlignment = Alignment.CenterHorizontally\r\n            ) {\r\n                Image(\r\n                    painter = painterResource(id = item.imageResourceId),\r\n                    contentDescription = null,\r\n                    modifier = Modifier\r\n                        .size(80.dp)\r\n                )\r\n                Spacer(modifier = Modifier.height(8.dp))\r\n                Text(\r\n                    text = item.title,\r\n                    color = Color(0xFF00008B),\r\n                    // color = MaterialTheme.colorScheme.secondary,\r\n                    style = MaterialTheme.typography.titleMedium.copy(\r\n                        fontWeight = FontWeight.Bold\r\n                    ), modifier = Modifier\r\n                        .wrapContentSize()\r\n                )\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n\r\ndata class DashboardItemModel(val title: String, val imageResourceId: Int)\r\n\r\nfun getDashboardItems(): List<DashboardItemModel> {\r\n    return listOf(\r\n        DashboardItemModel(\"Patients\", R.drawable.patient),\r\n        DashboardItemModel(\"Carer's Portal\", R.drawable.careportal),\r\n        DashboardItemModel(\"Scan Details\", R.drawable.qrcode),\r\n        DashboardItemModel(\"Email\", R.drawable.email),\r\n        DashboardItemModel(\"View Records\", R.drawable.record),\r\n        DashboardItemModel(\"Update Records\", R.drawable.updated)\r\n    )\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/careconnect/DashboardScreen.kt b/app/src/main/java/com/example/careconnect/DashboardScreen.kt
+--- a/app/src/main/java/com/example/careconnect/DashboardScreen.kt	(revision 630cc64f5e2a0143d62f8342cefb9d6246fe317e)
++++ b/app/src/main/java/com/example/careconnect/DashboardScreen.kt	(date 1702832072354)
+@@ -8,6 +8,7 @@
+ import androidx.compose.foundation.layout.Box
+ import androidx.compose.foundation.layout.Column
+ import androidx.compose.foundation.layout.Spacer
++import androidx.compose.foundation.layout.aspectRatio
+ import androidx.compose.foundation.layout.fillMaxSize
+ import androidx.compose.foundation.layout.fillMaxWidth
+ import androidx.compose.foundation.layout.height
+@@ -35,24 +36,24 @@
+ 
+ @Composable
+ fun DashboardScreen(navController: NavController? = null, userViewModel: UserViewModel) {
+-    Column(
++        Column(
+         modifier = Modifier
+             .fillMaxSize()
+-            .padding(top = 32.dp, start = 16.dp, end = 16.dp)
++            .padding(top = 15.dp, start = 16.dp, end = 16.dp)
+     ) {
+         Text(
+             text = "Dashboard",
+             color = Color(0xFF00008B),
+             modifier = Modifier
+                 .fillMaxWidth()
+-                .padding(bottom = 35.dp),
++                .padding(bottom = 17.dp),
+             style = MaterialTheme.typography.titleLarge
+                 .copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),
+             textAlign = TextAlign.Center
+         )
+ 
+         LazyColumn(
+-            verticalArrangement = Arrangement.spacedBy(20.dp),
++            verticalArrangement = Arrangement.spacedBy(10.dp),
+         ) {
+             items(getDashboardItems().chunked(2)) { rowItems ->
+                 TwoItemRow(rowItems, navController)
+@@ -82,8 +83,9 @@
+ fun DashboardItem(item: DashboardItemModel, navController: NavController?) {
+     Card(
+         modifier = Modifier
+-            .width(152.dp)
+-            .height(152.dp)
++            .width(140.dp)
++            //.fillMaxWidth()
++            .height(130.dp)
+             .clickable {
+                 if (item.title == "Patients") {
+                     navController?.navigate("patientsList")
+@@ -137,7 +139,7 @@
+             Column(
+                 modifier = Modifier
+                     .fillMaxSize()
+-                    .padding(16.dp),
++                    .padding(5.dp),
+                 verticalArrangement = Arrangement.Center,
+                 horizontalAlignment = Alignment.CenterHorizontally
+             ) {
+@@ -146,16 +148,16 @@
+                     contentDescription = null,
+                     modifier = Modifier
+                         .size(80.dp)
++                        .aspectRatio(1f)
+                 )
+-                Spacer(modifier = Modifier.height(8.dp))
++                Spacer(modifier = Modifier.height(4.dp))
+                 Text(
+                     text = item.title,
+                     color = Color(0xFF00008B),
+                     // color = MaterialTheme.colorScheme.secondary,
+                     style = MaterialTheme.typography.titleMedium.copy(
+                         fontWeight = FontWeight.Bold
+-                    ), modifier = Modifier
+-                        .wrapContentSize()
++                    ), modifier = Modifier.wrapContentSize()
+                 )
+             }
+         }
+Index: .idea/inspectionProfiles/Project_Default.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><component name=\"InspectionProjectProfileManager\">\r\n  <profile version=\"1.0\">\r\n    <option name=\"myName\" value=\"Project Default\" />\r\n    <inspection_tool class=\"PreviewAnnotationInFunctionWithParameters\" enabled=\"true\" level=\"ERROR\" enabled_by_default=\"true\">\r\n      <option name=\"composableFile\" value=\"true\" />\r\n      <option name=\"previewFile\" value=\"true\" />\r\n    </inspection_tool>\r\n    <inspection_tool class=\"PreviewApiLevelMustBeValid\" enabled=\"true\" level=\"ERROR\" enabled_by_default=\"true\">\r\n      <option name=\"composableFile\" value=\"true\" />\r\n      <option name=\"previewFile\" value=\"true\" />\r\n    </inspection_tool>\r\n    <inspection_tool class=\"PreviewDimensionRespectsLimit\" enabled=\"true\" level=\"WARNING\" enabled_by_default=\"true\">\r\n      <option name=\"composableFile\" value=\"true\" />\r\n      <option name=\"previewFile\" value=\"true\" />\r\n    </inspection_tool>\r\n    <inspection_tool class=\"PreviewFontScaleMustBeGreaterThanZero\" enabled=\"true\" level=\"ERROR\" enabled_by_default=\"true\">\r\n      <option name=\"composableFile\" value=\"true\" />\r\n      <option name=\"previewFile\" value=\"true\" />\r\n    </inspection_tool>\r\n    <inspection_tool class=\"PreviewMultipleParameterProviders\" enabled=\"true\" level=\"ERROR\" enabled_by_default=\"true\">\r\n      <option name=\"composableFile\" value=\"true\" />\r\n      <option name=\"previewFile\" value=\"true\" />\r\n    </inspection_tool>\r\n    <inspection_tool class=\"PreviewMustBeTopLevelFunction\" enabled=\"true\" level=\"ERROR\" enabled_by_default=\"true\">\r\n      <option name=\"composableFile\" value=\"true\" />\r\n      <option name=\"previewFile\" value=\"true\" />\r\n    </inspection_tool>\r\n    <inspection_tool class=\"PreviewNeedsComposableAnnotation\" enabled=\"true\" level=\"ERROR\" enabled_by_default=\"true\">\r\n      <option name=\"composableFile\" value=\"true\" />\r\n      <option name=\"previewFile\" value=\"true\" />\r\n    </inspection_tool>\r\n    <inspection_tool class=\"PreviewNotSupportedInUnitTestFiles\" enabled=\"true\" level=\"ERROR\" enabled_by_default=\"true\">\r\n      <option name=\"composableFile\" value=\"true\" />\r\n      <option name=\"previewFile\" value=\"true\" />\r\n    </inspection_tool>\r\n    <inspection_tool class=\"PreviewPickerAnnotation\" enabled=\"true\" level=\"ERROR\" enabled_by_default=\"true\">\r\n      <option name=\"composableFile\" value=\"true\" />\r\n      <option name=\"previewFile\" value=\"true\" />\r\n    </inspection_tool>\r\n  </profile>\r\n</component>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/inspectionProfiles/Project_Default.xml b/.idea/inspectionProfiles/Project_Default.xml
+--- a/.idea/inspectionProfiles/Project_Default.xml	(revision 630cc64f5e2a0143d62f8342cefb9d6246fe317e)
++++ b/.idea/inspectionProfiles/Project_Default.xml	(date 1702828044923)
+@@ -3,39 +3,30 @@
+     <option name="myName" value="Project Default" />
+     <inspection_tool class="PreviewAnnotationInFunctionWithParameters" enabled="true" level="ERROR" enabled_by_default="true">
+       <option name="composableFile" value="true" />
+-      <option name="previewFile" value="true" />
+     </inspection_tool>
+     <inspection_tool class="PreviewApiLevelMustBeValid" enabled="true" level="ERROR" enabled_by_default="true">
+       <option name="composableFile" value="true" />
+-      <option name="previewFile" value="true" />
+     </inspection_tool>
+     <inspection_tool class="PreviewDimensionRespectsLimit" enabled="true" level="WARNING" enabled_by_default="true">
+       <option name="composableFile" value="true" />
+-      <option name="previewFile" value="true" />
+     </inspection_tool>
+     <inspection_tool class="PreviewFontScaleMustBeGreaterThanZero" enabled="true" level="ERROR" enabled_by_default="true">
+       <option name="composableFile" value="true" />
+-      <option name="previewFile" value="true" />
+     </inspection_tool>
+     <inspection_tool class="PreviewMultipleParameterProviders" enabled="true" level="ERROR" enabled_by_default="true">
+       <option name="composableFile" value="true" />
+-      <option name="previewFile" value="true" />
+     </inspection_tool>
+     <inspection_tool class="PreviewMustBeTopLevelFunction" enabled="true" level="ERROR" enabled_by_default="true">
+       <option name="composableFile" value="true" />
+-      <option name="previewFile" value="true" />
+     </inspection_tool>
+     <inspection_tool class="PreviewNeedsComposableAnnotation" enabled="true" level="ERROR" enabled_by_default="true">
+       <option name="composableFile" value="true" />
+-      <option name="previewFile" value="true" />
+     </inspection_tool>
+     <inspection_tool class="PreviewNotSupportedInUnitTestFiles" enabled="true" level="ERROR" enabled_by_default="true">
+       <option name="composableFile" value="true" />
+-      <option name="previewFile" value="true" />
+     </inspection_tool>
+     <inspection_tool class="PreviewPickerAnnotation" enabled="true" level="ERROR" enabled_by_default="true">
+       <option name="composableFile" value="true" />
+-      <option name="previewFile" value="true" />
+     </inspection_tool>
+   </profile>
+ </component>
+\ No newline at end of file
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"VcsDirectoryMappings\">\r\n    <mapping directory=\"$PROJECT_DIR$/../..\" vcs=\"Git\" />\r\n    <mapping directory=\"$PROJECT_DIR$/..\" vcs=\"Git\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/vcs.xml b/.idea/vcs.xml
+--- a/.idea/vcs.xml	(revision 630cc64f5e2a0143d62f8342cefb9d6246fe317e)
++++ b/.idea/vcs.xml	(date 1702828045212)
+@@ -2,6 +2,5 @@
+ <project version="4">
+   <component name="VcsDirectoryMappings">
+     <mapping directory="$PROJECT_DIR$/../.." vcs="Git" />
+-    <mapping directory="$PROJECT_DIR$/.." vcs="Git" />
+   </component>
+ </project>
+\ No newline at end of file
+Index: app/src/main/java/com/example/careconnect/MainActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.careconnect\r\n\r\nimport ProfileScreen\r\nimport UserViewModel\r\nimport android.os.Bundle\r\nimport androidx.activity.ComponentActivity\r\nimport androidx.activity.compose.setContent\r\nimport androidx.compose.foundation.layout.*\r\nimport androidx.compose.material3.MaterialTheme\r\nimport androidx.compose.material3.Surface\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.lifecycle.ViewModelProvider\r\nimport androidx.lifecycle.viewmodel.compose.viewModel\r\nimport androidx.navigation.compose.NavHost\r\nimport androidx.navigation.compose.composable\r\nimport androidx.navigation.compose.rememberNavController\r\nimport com.example.careconnect.ui.theme.CareConnectTheme\r\n\r\nclass MainActivity : ComponentActivity() {\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n\r\n        setContent {\r\n            CareConnectTheme {\r\n                val navController = rememberNavController()\r\n                val userViewModel: UserViewModel = viewModel()\r\n\r\n                Surface(\r\n                    modifier = Modifier.fillMaxSize(),\r\n                    color = MaterialTheme.colorScheme.background\r\n                ) {\r\n                    // Navigation Host\r\n                    NavHost(navController = navController, startDestination = \"login\") {\r\n                        composable(\"login\") {\r\n                            LoginScreen(navController, userViewModel)\r\n                        }\r\n                        composable(\"register\") {\r\n                            RegisterScreen(navController)\r\n                        }\r\n                        composable(\"dashboard\") {\r\n                            DashboardScreen(navController, userViewModel)\r\n                        }\r\n                        composable(\"patientsList\") {\r\n                            PatientsListScreen(navController)\r\n                        }\r\n                        composable(\"carersPortal\") {\r\n                            CarersPortal(navController)\r\n                        }\r\n                        composable(\"scanDetails\") {\r\n                            ScanDetailsScreen(navController)\r\n                        }\r\n                        composable(\"emailScreen\") {\r\n                            EmailScreen(navController)\r\n                        }\r\n                        composable(\"viewRecords\") {\r\n                            MedicalRecordsList(navController)\r\n                        }\r\n                        composable(\"settings\") {\r\n                            SettingsScreen(navController, userViewModel)\r\n                        }\r\n                        composable(\"notifications\") {\r\n                            NotificationsScreen(navController, userViewModel)\r\n                        }\r\n                        composable(\"profile/{profilePicUrl}\") { backStackEntry ->\r\n                            val profilePicUrl = backStackEntry.arguments?.getString(\"profilePicUrl\")\r\n                            ProfileScreen(navController, profilePicUrl)\r\n                        }\r\n                        composable(\"patientDetails/{patientName}\") { backStackEntry ->\r\n                            val patientName = backStackEntry.arguments?.getString(\"patientName\")\r\n                            val patient = getPatientByName(patientName ?: \"\")\r\n                            if (patient != null) {\r\n                                PatientDetailsScreen(patient)\r\n                            } else {\r\n                                // Handle the case where the patient is not found\r\n                            }\r\n                        }\r\n\r\n                        composable(\"recordDetails/{recordTitle}\") { backStackEntry ->\r\n                            val recordTitle = backStackEntry.arguments?.getString(\"recordTitle\")\r\n                            val record = getRecordByTitle(recordTitle ?: \"\")\r\n                            if (record != null) {\r\n                                MedicalRecord(record, navController, userViewModel)\r\n                            } else {\r\n                                // Handle the case where the record is not found\r\n                            }\r\n                        }\r\n                        composable(\"UpdateMedicalRecord/{recordId}\") { backStackEntry ->\r\n                            val recordTitle = backStackEntry.arguments?.getString(\"recordTitle\")\r\n                            val record = getRecordByTitle(recordTitle ?: \"\")\r\n                            if (record != null) {\r\n                                UpdateMedicalRecord(record, navController, userViewModel)\r\n                            } else {\r\n                                // Handle the case where the record is not found\r\n                            }\r\n                        }\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\nfun getPatientByName(name: String): PatientModel? {\r\n    val patients = listOf(\r\n        PatientModel(\"Patient 1\", \"Margret Cole\", \"Diagnosis 1\"),\r\n        PatientModel(\"Patient 2\", \"Ben Martin\", \"Diagnosis 2\"),\r\n        PatientModel(\"Patient 3\", \"Bridget Kenna\", \"Diagnosis 3\"),\r\n    )\r\n    return patients.find { it.name == name }\r\n}\r\n\r\nfun getRecordByTitle(title: String): RecordModel? {\r\n    val records = listOf(\r\n        RecordModel(1, \"Record 1\", \"2023-01-01\"),\r\n        RecordModel(2, \"Record 2\", \"2023-02-15\"),\r\n        RecordModel(3, \"Record 3\", \"2023-03-20\"),\r\n        // Add more records as needed\r\n    )\r\n    return records.find { it.title == title }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/careconnect/MainActivity.kt b/app/src/main/java/com/example/careconnect/MainActivity.kt
+--- a/app/src/main/java/com/example/careconnect/MainActivity.kt	(revision 630cc64f5e2a0143d62f8342cefb9d6246fe317e)
++++ b/app/src/main/java/com/example/careconnect/MainActivity.kt	(date 1702834078691)
+@@ -33,6 +33,7 @@
+                     NavHost(navController = navController, startDestination = "login") {
+                         composable("login") {
+                             LoginScreen(navController, userViewModel)
++
+                         }
+                         composable("register") {
+                             RegisterScreen(navController)

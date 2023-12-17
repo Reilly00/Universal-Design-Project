@@ -47,7 +47,7 @@ fun NotificationsScreen(navController: NavController, userViewModel: UserViewMod
             color = Color(0xFF00008B),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 40.dp),
+                .padding(bottom = 22.dp),
             style = MaterialTheme.typography.titleLarge
                 .copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),
             textAlign = TextAlign.Center
@@ -113,6 +113,5 @@ fun getNotificationItems(): List<NotificationItemModel> {
         NotificationItemModel("Task Completed", "Task assigned to you has been completed."),
         NotificationItemModel("Appointment Confirmation", "Your appointment is confirmed."),
         NotificationItemModel("Appointment Update", "Update on your upcoming appointment."),
-
         )
 }
