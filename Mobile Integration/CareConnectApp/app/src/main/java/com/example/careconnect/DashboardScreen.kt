@@ -36,7 +36,11 @@ import androidx.navigation.NavController
 
 @Composable
 fun DashboardScreen(navController: NavController? = null, userViewModel: UserViewModel) {
+functionality-user
         Column(
+
+    Column(
+ main
         modifier = Modifier
             .fillMaxSize()
             .padding(top = 15.dp, start = 16.dp, end = 16.dp)
