@@ -57,7 +57,7 @@ fun LoginScreen(navController: NavController? = null, userViewModel: UserViewMod
             contentDescription = "Logo",
             modifier = Modifier
         )
-        Spacer(modifier = Modifier.height(128.dp))
+        Spacer(modifier = Modifier.height(80.dp))
         OutlinedTextField(
             value = username,
             onValueChange = { username = it.trim() },
