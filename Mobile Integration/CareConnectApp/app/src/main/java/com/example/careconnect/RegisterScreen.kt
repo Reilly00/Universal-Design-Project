@@ -50,7 +50,7 @@ fun RegisterScreen(navController: NavController? = null) {
             contentDescription = "Contact profile picture",
             modifier = Modifier
         )
-        Spacer(modifier = Modifier.height(128.dp))
+        Spacer(modifier = Modifier.height(80.dp))
 
         OutlinedTextField(
             value = email,
