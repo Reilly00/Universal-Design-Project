@@ -1,7 +1,5 @@
 package com.example.careconnect
 
-import UserViewModel
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -78,22 +76,29 @@ fun LoginScreen(navController: NavController? = null, userViewModel: UserViewMod
                 if (!isLoginInProgress) {
                     isLoginInProgress = true
                     coroutineScope.launch {
-                        try {
-                            val response = RetrofitClient.instance.loginUser(LoginData(username, password))
-                            if (response.isSuccessful && response.body() != null) {
-                                val loginResponse = response.body()!!
-                                userViewModel.updateProfilePicUrl(loginResponse.profile_pic_url)
-                                navController?.navigate("dashboard")
-                                loginStatus = LoginStatus.SUCCESS
-                            } else {
-                                loginStatus = LoginStatus.ERROR
+                        var attempts = 0
+                        val maxAttempts = 10
+                        while (attempts < maxAttempts) {
+                            try {
+                                val response = RetrofitClient.instance.loginUser(LoginData(username, password))
+                                if (response.isSuccessful && response.body() != null) {
+                                    val loginResponse = response.body()!!
+                                    userViewModel.updateProfilePicUrl(loginResponse.profile_pic_url)
+                                    userViewModel.updateUserId(4)
+                                    navController?.navigate("dashboard")
+                                    loginStatus = LoginStatus.SUCCESS
+                                    break
+                                } else {
+                                    attempts++
+                                    loginStatus = if (attempts >= maxAttempts) LoginStatus.ERROR else LoginStatus.NONE
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                                attempts++
+                                loginStatus = if (attempts >= maxAttempts) LoginStatus.ERROR else LoginStatus.NONE
                             }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                            loginStatus = LoginStatus.ERROR
-                        } finally {
-                            isLoginInProgress = false
                         }
+                        isLoginInProgress = false
                     }
                 }
             },
