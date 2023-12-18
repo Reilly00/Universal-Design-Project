@@ -43,7 +43,7 @@ fun RegisterScreen(navController: NavController? = null) {
             contentDescription = "Care Connect Logo",
             modifier = Modifier
         )
-        Spacer(modifier = Modifier.height(128.dp))
+        Spacer(modifier = Modifier.height(80.dp))
 
         OutlinedTextField(
             value = email,
