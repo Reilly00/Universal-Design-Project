@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.net.ProtocolException
 
 class UserViewModel : ViewModel() {
     private val _profilePicUrl = MutableStateFlow<String?>(null)
@@ -31,25 +32,47 @@ class UserViewModel : ViewModel() {
         }
     }
 
-    fun fetchServerPatientCards(userId: Int) {
+    fun fetchServerPatientCards(userId: Int, retryCount: Int = 10) {
         viewModelScope.launch {
-            try {
-                val response = RetrofitClient.instance.getServerPatientCardsForUser(userId)
-                if (response.isSuccessful && response.body() != null) {
-                    _serverPatientCards.value = response.body()!!
-                    Log.d("UserViewModel", "Fetched server patient cards: ${_serverPatientCards.value}")
-                } else {
-                    Log.d("UserViewModel", "Response not successful or body is null")
-                    _serverPatientCards.value = listOf() // or a specific error state
+            var attempts = 0
+            while (attempts < retryCount) {
+                try {
+                    val response = RetrofitClient.instance.getServerPatientCardsForUser(userId)
+                    if (response.isSuccessful && response.body() != null) {
+                        _serverPatientCards.value = response.body()!!
+                        Log.d(
+                            "UserViewModel",
+                            "Fetched server patient cards: ${_serverPatientCards.value}"
+                        )
+                        break
+                    } else {
+                        Log.d("UserViewModel", "Response not successful or body is null")
+                        _serverPatientCards.value = listOf() // or a specific error state
+                        attempts++
+                    }
+                } catch (e: Exception) {
+                    if (e is ProtocolException && e.message?.contains(
+                            "unexpected end of stream",
+                            ignoreCase = true
+                        ) == true
+                    ) {
+                        Log.e("UserViewModel", "Retrying... Attempt ${attempts + 1}")
+                        attempts++
+                    } else {
+                        Log.e(
+                            "UserViewModel",
+                            "Error fetching server patient cards: ${e.message}",
+                            e
+                        )
+                        break
+                    }
                 }
-            } catch (e: Exception) {
-                Log.e("UserViewModel", "Error fetching server patient cards: ${e.message}", e)
             }
         }
     }
 }
 
-// Data model for server patient cards
+    // Data model for server patient cards
 data class ServerPatientModel(
     val id: Int,
     val patient_id: String,

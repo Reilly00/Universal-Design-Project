@@ -37,6 +37,7 @@ object RetrofitClient {
         .retryOnConnectionFailure(true)
         .readTimeout(30, TimeUnit.SECONDS)
         .connectTimeout(30, TimeUnit.SECONDS)
+        .callTimeout(60, TimeUnit.SECONDS)
         .build()
 
 
