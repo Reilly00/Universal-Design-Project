@@ -64,6 +64,21 @@ def get_user(username):
     finally:
         connection.close()
 
+def get_patient_cards_for_user(user_id):
+    connection = pymysql.connect(**db_config)
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            sql = """
+            SELECT cards.id, cards.patient_id, cards.medical_data
+            FROM cards
+            JOIN users ON cards.user_id = users.user_id
+            WHERE users.user_id = %s
+            """
+            cursor.execute(sql, (user_id,))
+            return cursor.fetchall()
+    finally:
+        connection.close()
+
 # PubNub subscribe callback
 class MySubscribeCallback(SubscribeCallback):
     def message(self, pubnub, message):
@@ -111,9 +126,22 @@ def login():
 
     user = get_user(username)
     if user and verify_password(password, user['password_hash']):
-        return jsonify({"message": "Login successful", "profile_pic_url": user.get('profile_pic_url')}), 200
+        return jsonify({
+            "message": "Login successful",
+            "profile_pic_url": user.get('profile_pic_url'),
+            "user_id": user['user_id'] 
+        }), 200
     else:
         return jsonify({"message": "Invalid username or password"}), 401
+
+@app.route('/user/<int:user_id>/patient_cards', methods=['GET'])
+def patient_cards(user_id):
+    try:
+        patient_cards = get_patient_cards_for_user(user_id)
+        return jsonify(patient_cards), 200
+    except Exception as e:
+        logging.error(f"Error in retrieving patient cards: {e}")
+        return jsonify({"message": "Error in retrieving patient cards"}), 500
 
 if __name__ == '__main__':
     try:

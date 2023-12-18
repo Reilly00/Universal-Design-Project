@@ -1,7 +1,5 @@
 package com.example.careconnect
 
-import UserViewModel
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -83,6 +81,7 @@ fun LoginScreen(navController: NavController? = null, userViewModel: UserViewMod
                             if (response.isSuccessful && response.body() != null) {
                                 val loginResponse = response.body()!!
                                 userViewModel.updateProfilePicUrl(loginResponse.profile_pic_url)
+                                userViewModel.updateUserId(4)
                                 navController?.navigate("dashboard")
                                 loginStatus = LoginStatus.SUCCESS
                             } else {

@@ -27,5 +27,12 @@ INSERT INTO users (username, email, password_hash) VALUES ('testuser', 'testuser
 
 ALTER TABLE users ADD COLUMN profile_pic_url VARCHAR(255);
 UPDATE users SET profile_pic_url = 'https://tr.rbxcdn.com/38c6edcb50633730ff4cf39ac8859840/420/420/Hat/Png' WHERE user_id = 2;
-
 UPDATE users SET profile_pic_url = 'https://www.trustontap.com/wp-content/uploads/2020/04/helen-de-hartog-trustontap.jpg' WHERE user_id = 4;
+
+ALTER TABLE cards
+ADD COLUMN user_id INT,
+ADD FOREIGN KEY (user_id) REFERENCES users(user_id);
+
+UPDATE cards
+SET user_id = 4
+WHERE id = 1;

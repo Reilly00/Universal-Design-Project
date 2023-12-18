@@ -1,6 +1,5 @@
 package com.example.careconnect
 
-import UserViewModel
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

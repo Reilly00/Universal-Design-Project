@@ -1,7 +1,6 @@
 package com.example.careconnect
 
 import ProfileScreen
-import UserViewModel
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -42,7 +41,7 @@ class MainActivity : ComponentActivity() {
                             DashboardScreen(navController, userViewModel)
                         }
                         composable("patientsList") {
-                            PatientsListScreen(navController)
+                            PatientsListScreen(navController, userViewModel = userViewModel)
                         }
                         composable("carersPortal") {
                             CarersPortal(navController)
