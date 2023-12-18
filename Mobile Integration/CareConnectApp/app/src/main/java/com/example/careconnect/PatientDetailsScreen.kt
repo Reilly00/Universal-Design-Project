@@ -91,10 +91,6 @@ fun PatientDetailsScreen(patient: PatientModel, navController: NavController? = 
             modifier = Modifier.padding(bottom = 8.dp, start = 20.dp)
         )
 
-       // navController?.let { BottomNavigationBar(it) }
+        // navController?.let { BottomNavigationBar(it) }
     }
-
 }
-
-
-

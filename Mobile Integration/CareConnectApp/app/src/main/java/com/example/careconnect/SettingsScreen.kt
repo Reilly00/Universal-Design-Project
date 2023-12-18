@@ -1,5 +1,6 @@
 package com.example.careconnect
 
+import UserViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -38,7 +39,7 @@ import androidx.compose.ui.Alignment.Companion as Alignment1
 
 
 @Composable
-fun SettingsScreen(navController: NavController? = null) {
+fun SettingsScreen(navController: NavController? = null, userViewModel: UserViewModel) {
     val lightPinkColor = Color(0xFFF5F1F2)
     val strongerPinkColor = Color(0xFF947B83)
 
@@ -68,7 +69,7 @@ fun SettingsScreen(navController: NavController? = null) {
 
         // Content
         SettingsContent()
-        navController?.let { BottomNavigationBar(it) }
+        navController?.let { BottomNavigationBar(it, userViewModel) }
     }
 }
 

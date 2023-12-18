@@ -1,5 +1,6 @@
 package com.example.careconnect
 
+import UserViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -24,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 @Composable
-fun NotificationsScreen(navController: NavController? = null) {
+fun NotificationsScreen(navController: NavController, userViewModel: UserViewModel) {
     val lightPinkColor = Color(0xFFF5F1F2)
     val strongerPinkColor = Color(0xFF947B83)
 
@@ -46,7 +47,7 @@ fun NotificationsScreen(navController: NavController? = null) {
             color = Color(0xFF00008B),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 40.dp),
+                .padding(bottom = 22.dp),
             style = MaterialTheme.typography.titleLarge
                 .copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),
             textAlign = TextAlign.Center
@@ -54,7 +55,7 @@ fun NotificationsScreen(navController: NavController? = null) {
 
         // Content
         NotificationsContent()
-        navController?.let { BottomNavigationBar(it) }
+        navController?.let { BottomNavigationBar(it, userViewModel) }
     }
 }
 
@@ -112,6 +113,5 @@ fun getNotificationItems(): List<NotificationItemModel> {
         NotificationItemModel("Task Completed", "Task assigned to you has been completed."),
         NotificationItemModel("Appointment Confirmation", "Your appointment is confirmed."),
         NotificationItemModel("Appointment Update", "Update on your upcoming appointment."),
-
         )
 }

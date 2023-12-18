@@ -3,17 +3,7 @@ package com.example.careconnect
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,6 +13,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,8 +24,10 @@ fun RegisterScreen(navController: NavController? = null) {
     var emailError by remember { mutableStateOf("") }
     var passwordError by remember { mutableStateOf(false) }
     var passwordRequirementError by remember { mutableStateOf("") }
+    var registrationStatus by remember { mutableStateOf<RegistrationStatus>(RegistrationStatus.NONE) }
+    var isRegistrationInProgress by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
 
-    // Additional state for password strength
     val passwordStrength = getPasswordStrength(password)
 
     Column(
@@ -47,7 +40,7 @@ fun RegisterScreen(navController: NavController? = null) {
         Spacer(modifier = Modifier.weight(1f))
         Image(
             painter = painterResource(R.drawable.logo),
-            contentDescription = "Contact profile picture",
+            contentDescription = "Care Connect Logo",
             modifier = Modifier
         )
         Spacer(modifier = Modifier.height(80.dp))
@@ -73,16 +66,13 @@ fun RegisterScreen(navController: NavController? = null) {
 
         OutlinedTextField(
             value = password,
-            onValueChange = {
-                password = it.trim()
-            },
+            onValueChange = { password = it.trim() },
             label = { Text("Password") },
             singleLine = true,
             visualTransformation = PasswordVisualTransformation(),
             isError = passwordError || passwordRequirementError.isNotEmpty()
         )
 
-        // Display Password Strength Meter
         PasswordStrengthMeter(strength = passwordStrength)
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -120,15 +110,33 @@ fun RegisterScreen(navController: NavController? = null) {
             onClick = {
                 emailError = if (!isEmailValid(email)) "Invalid email format" else ""
                 passwordError = password != confirmPassword
-                if (passwordError) {
-                    passwordRequirementError = ""
-                } else if (!isPasswordValid(password)) {
-                    passwordRequirementError = "Password must:\n Be at least 8 characters, \n include an uppercase letter, \n a lowercase letter, symbol, and a number."
-                } else {
-                    passwordRequirementError = ""
-                    // TODO: Add registration logic here if passwords match and meet requirements
+                passwordRequirementError = if (!isPasswordValid(password)) {
+                    "Password must: \nBe at least 8 characters, \ninclude an uppercase letter, \nlowercase letter, symbol, and a number."
+                } else ""
+
+                if (emailError.isEmpty() && !passwordError && passwordRequirementError.isEmpty() && !isRegistrationInProgress) {
+                    isRegistrationInProgress = true
+                    coroutineScope.launch {
+                        try {
+                            val response = RetrofitClient.instance.registerUser(
+                                RegistrationData(username = email, email = email, password = password)
+                            )
+                            if (response.isSuccessful) {
+                                registrationStatus = RegistrationStatus.SUCCESS
+                                navController?.navigate("dashboard")
+                            } else {
+                                registrationStatus = RegistrationStatus.ERROR
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            registrationStatus = RegistrationStatus.ERROR
+                        } finally {
+                            isRegistrationInProgress = false
+                        }
+                    }
                 }
             },
+            enabled = !isRegistrationInProgress,
             shape = MaterialTheme.shapes.medium,
             modifier = Modifier.fillMaxWidth(fraction = 0.5f),
             contentPadding = PaddingValues(16.dp)
@@ -136,10 +144,16 @@ fun RegisterScreen(navController: NavController? = null) {
             Text(text = "Register")
         }
 
+        when (registrationStatus) {
+            RegistrationStatus.SUCCESS -> Text("Registration successful", color = Color.Green)
+            RegistrationStatus.ERROR -> Text("Registration failed", color = Color.Red)
+            else -> {} // Do nothing for NONE
+        }
+
         Spacer(modifier = Modifier.height(10.dp))
 
         Text(
-            text = "Already have an account? Log-in",
+            text = "Already have an account? Log in",
             modifier = Modifier.clickable { navController?.navigate("login") }
         )
 
@@ -150,10 +164,10 @@ fun RegisterScreen(navController: NavController? = null) {
 @Composable
 fun PasswordStrengthMeter(strength: PasswordStrength) {
     val strengthColor = when (strength) {
-        PasswordStrength.STRONG -> Color.Green // Strong password
-        PasswordStrength.MEDIUM -> Color(0xFFFFA500) // Medium strength - Orange color
-        PasswordStrength.WEAK -> Color.Red // Weak password
-        PasswordStrength.NONE -> Color.Gray // No password entered
+        PasswordStrength.STRONG -> Color.Green
+        PasswordStrength.MEDIUM -> Color(0xFFFFA500)
+        PasswordStrength.WEAK -> Color.Red
+        PasswordStrength.NONE -> Color.Gray
     }
 
     Row(modifier = Modifier.padding(vertical = 8.dp)) {
@@ -163,4 +177,8 @@ fun PasswordStrengthMeter(strength: PasswordStrength) {
             .height(10.dp)
             .background(strengthColor))
     }
+}
+
+enum class RegistrationStatus {
+    NONE, SUCCESS, ERROR
 }
